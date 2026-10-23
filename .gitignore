@@ -1,0 +1,13 @@
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/data/*.db
+backend/data/*.db-*
+backend/data/*.pkl
+backend/data/uploads/
+backend/data/model/
+backend/data/real_bins.csv
+frontend/node_modules/
+frontend/dist/
+.DS_Store
