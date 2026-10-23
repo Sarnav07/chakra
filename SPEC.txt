@@ -193,6 +193,12 @@ chakra/
     src/App.jsx, src/api.js ................ P3   (others ask P3 to change)
     src/styles/tokens.css, base.css ........ created by P3, then owned by P4
     src/ui/* ............................... created by P3, then owned by P4
+                                             (incl. ui/Backdrop.jsx and
+                                              ui/LeafLogo.jsx: simple versions
+                                              by P3 in P3-1, upgraded by P4)
+    src/pages/Home.jsx, Home.css ........... P4   (Home.jsx stub by P3)
+    public/media/chakra-bg.mp4,
+      chakra-bg-poster.jpg ................. P4   (committed; served as /media/...)
     src/pages/RiskMap.jsx, PlanTomorrow.jsx,
       Worker.jsx, TwinLab.jsx,
       Dashboard.jsx, MessLog.jsx ........... P3
@@ -201,6 +207,8 @@ chakra/
       QrSheet.jsx, ScaleLab.jsx ............ P2   (stub by P3)
     src/components/ReportOverflowButton.jsx  P2   (stub by P3)
     src/components/* (all others) .......... P3
+  design/mockup/*.dc.html, README.txt ...... reference only (the approved UI
+                                             mockup; read it, never run or edit it)
 
 .gitignore must contain:
   backend/.venv/   __pycache__/   *.pyc   .pytest_cache/
@@ -890,7 +898,7 @@ app.scale_lab.run (P2):  run_scale_lab() -> dict ;  load_scale_cache() -> dict |
 16. FRONTEND CONTRACT
 ---------------------------------------------------------------------
 16.1 Routes (react-router-dom v6, BrowserRouter, in App.jsx):
-  /            -> redirect to /map
+  /            Home           (P4)   in nav "Home" (landing page, inside Layout)
   /map         RiskMap        (P3)   in nav "Risk map"
   /plan        PlanTomorrow   (P3)   "Plan tomorrow"
   /worker      Worker         (P3)   "Worker"
@@ -929,9 +937,18 @@ app.scale_lab.run (P2):  run_scale_lab() -> dict ;  load_scale_cache() -> dict |
   Slider {label, min, max, step, value, onChange(number), hint}
   Stat {label, value, unit, hint}
   DataTable {columns:[{key, label, render?}], rows, emptyText}
-  Layout {children}  (top nav with the 9 nav links of 16.1, a "Reset demo"
-         button calling resetDemo(), and a SIMULATED DATA notice)
-  PageHeader {title, subtitle, badges: array of Badge kinds}
+  Layout {children}  (top nav with the 10 nav links of 16.1, a "Reset demo"
+         button calling resetDemo(), and a SIMULATED DATA notice; renders
+         <Backdrop/> behind everything)
+  Backdrop {}        (fixed full-screen background video /media/chakra-bg.mp4,
+         muted autoplay loop playsInline, poster /media/chakra-bg-poster.jpg,
+         a white veil on top; only the poster image when the user prefers
+         reduced motion; aria-hidden)
+  LeafLogo {size=22} (the leaf icon of design/mockup + the word CHAKRA, links
+         to "/"; the leaf sways on hover)
+  PageHeader {title, subtitle, badges: array of Badge kinds,
+         accentLastWord=true} (title in the display font; when the title has
+         two or more words the last word is italic in the accent colour)
   Notice {kind:"info"|"error"|"success", children}
   Loading {text}     EmptyState {title, children}
   MapLegend {items:[{color, label}]}
@@ -950,10 +967,24 @@ app.scale_lab.run (P2):  run_scale_lab() -> dict ;  load_scale_cache() -> dict |
   --color-badge-new --color-p1 --color-p2 --color-p3
   --radius --space-1 --space-2 --space-3 --space-4 --space-5 --space-6
   --font-sans --font-mono --shadow
-  Starting values (from the plan PDF): primary #1E6B47, badge implemented
-  #1E6B47, simulated #C4561B, proposed #3D4A5C, new #0E8C8C,
-  p1 #2F6DB5, p2 #B8791F, p3 #9C2A6B, risk-low #2E9D5B, risk-mid #E0A21B,
-  risk-high #D2452F, overflow #7A1010, review #8A8F98, reported #7B3FC2.
+  Added for the final design (P4-1): --font-display --color-accent
+  --color-text-body --color-surface-glass --color-border-glass --glass-blur
+  --radius-card --radius-pill --shadow-card --veil
+  Starting values = the approved mockup (design/mockup/README.txt):
+  text #252B31, text-body #3F4A4B, muted #5E6A6B, bg #F3F6F4 (shows only
+  while the video loads), surface #FFFFFF, surface-glass
+  rgba(255,255,255,0.82), border rgba(37,43,49,0.12), border-glass
+  rgba(255,255,255,0.7), primary #252B31 (charcoal buttons),
+  primary-contrast #FFFFFF, accent #1E6B47, glass-blur 16px, radius 8px,
+  radius-card 16px, radius-pill 999px, veil rgba(255,255,255,0.30),
+  shadow-card 0 25px 80px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05),
+  font-display "Instrument Serif", font-sans "Inter" (Google Fonts, with
+  system fallbacks), badge implemented #1E6B47, simulated #B04A14,
+  proposed #3D4A5C, new #0B7373, p1 #2F6DB5, p2 #B8791F, p3 #9C2A6B,
+  risk-low #2E9D5B, risk-mid #E0A21B, risk-high #D2452F, overflow #7A1010,
+  review #8A8F98, reported #7B3FC2, danger #8C1D1D, success #1E6B47.
+  No new npm packages for the design: fonts via a Google Fonts @import,
+  icons as inline SVG, animations as CSS keyframes.
 16.6 Map: react-leaflet MapContainer with an explicit CSS height; import
   "leaflet/dist/leaflet.css" once in main.jsx; tiles from
   https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png with attribution

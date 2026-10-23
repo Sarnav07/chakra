@@ -109,11 +109,12 @@ Files you may create (nothing else):
   frontend/src/styles/tokens.css, frontend/src/styles/base.css
   frontend/src/ui/Button.jsx, Card.jsx, Badge.jsx, StatusPill.jsx,
     Slider.jsx, Stat.jsx, DataTable.jsx, Layout.jsx, PageHeader.jsx,
-    Notice.jsx, Loading.jsx, EmptyState.jsx, MapLegend.jsx, colors.js,
-    chartTheme.js, index.js
-  frontend/src/pages/RiskMap.jsx, PlanTomorrow.jsx, Worker.jsx,
+    Notice.jsx, Loading.jsx, EmptyState.jsx, MapLegend.jsx, Backdrop.jsx,
+    LeafLogo.jsx, colors.js, chartTheme.js, ui.css, index.js
+  frontend/src/pages/Home.jsx, RiskMap.jsx, PlanTomorrow.jsx, Worker.jsx,
     ReportsQueue.jsx, CheckItem.jsx, MessLog.jsx, TwinLab.jsx,
     Dashboard.jsx, ScaleLab.jsx, QrSheet.jsx, BinReport.jsx
+  (frontend/public/media/ already holds the video and poster - do not touch it)
   frontend/src/components/ReportOverflowButton.jsx
 
 1. package.json: name "chakra-frontend", private, "type": "module", the
@@ -127,7 +128,7 @@ Files you may create (nothing else):
    "./styles/base.css"; render <BrowserRouter><App/></BrowserRouter> in
    React.StrictMode with createRoot.
 5. App.jsx: the routes of SPEC 16.1 exactly. Every page except BinReport is
-   wrapped in <Layout>. "/" redirects to "/map". Unknown path -> a simple
+   wrapped in <Layout>. "/" shows the Home page. Unknown path -> a simple
    EmptyState "Page not found".
 6. api.js: every function of SPEC 16.2 with the exact names, HTTP methods
    and paths of SPEC 14. One request() helper: fetch("/api" + path),
@@ -144,13 +145,18 @@ Files you may create (nothing else):
    container (max-width 1200px, padding var(--space-4)), and responsive
    rules so nothing scrolls horizontally at 375px width.
 8. ui/: simple, working versions of every component of SPEC 16.4 with
-   EXACTLY those props, styled only with the CSS variables (inline style
-   objects or a single ui.css imported by index.js - choose one and say
-   which). Badge default texts IMPLEMENTED / SIMULATED / PROPOSED / NEW.
-   Layout: top bar "CHAKRA" + the 9 nav links of SPEC 16.1 (NavLink with
-   active style), a "Reset demo" Button (window.confirm, then resetDemo(),
-   then window.location.reload()), and a thin notice
+   EXACTLY those props, styled with CSS classes in ONE file, ui/ui.css,
+   imported by ui/index.js, using only the CSS variables. Keep them plain:
+   P4 restyles them later to the final design. Badge default texts
+   IMPLEMENTED / SIMULATED / PROPOSED / NEW.
+   Layout: renders <Backdrop/> first, then a top bar with <LeafLogo/> + the
+   10 nav links of SPEC 16.1 (NavLink with active style), a "Reset demo"
+   Button (window.confirm, then resetDemo(), then
+   window.location.reload()), and a thin notice
    "Data shown is SIMULATED for the prototype" under the bar.
+   Backdrop (simple version): a fixed full-screen div with background
+   var(--color-bg), aria-hidden, z-index below the content. LeafLogo
+   (simple version): a Link to "/" with the text "CHAKRA". P4 upgrades both.
    colors.js: cssVar(name) via getComputedStyle(document.documentElement)
    and riskColor(item) with the SPEC 16.4 rules (item has reason_code and
    p_overflow). chartTheme.js: export const CHART = {series: [...6 colors
@@ -158,8 +164,8 @@ Files you may create (nothing else):
    re-exports all components and helpers.
 9. Pages: each stub renders <PageHeader> with its title from SPEC 16.1 and
    a Notice "Coming soon - owner Px". Put "// OWNER: Px (stub created by
-   P3)" on line 1 using the owners of SPEC 3 (CheckItem P1; BinReport,
-   ReportsQueue, QrSheet, ScaleLab P2; the rest P3).
+   P3)" on line 1 using the owners of SPEC 3 (Home P4; CheckItem P1;
+   BinReport, ReportsQueue, QrSheet, ScaleLab P2; the rest P3).
    components/ReportOverflowButton.jsx stub: props {binId, binName,
    onReported}; renders a disabled Button "Report overflow (coming soon)";
    line 1 "// OWNER: P2 (stub created by P3)".
