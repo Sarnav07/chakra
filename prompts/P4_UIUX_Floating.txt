@@ -18,6 +18,9 @@ Rules for P4 (read before claiming)
   P4-1 and P4-2 give the biggest visual gain for the least time.
 How to use: open Claude Code in chakra/, NEW session per prompt, copy
 everything between the COPY lines.
+If you use Google Antigravity (P3): new agent conversation in Planning
+mode, and paste the "ANTIGRAVITY RULES" block from the top of any P3
+prompt BEFORE the P4 prompt text.
 ---------------------------------------------------------------------
 
 

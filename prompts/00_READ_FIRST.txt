@@ -15,9 +15,12 @@ FILES
   P4_UIUX_Floating.txt             UI/UX polish, taken by whoever is free
 
 WHICH CLAUDE
-  These prompts are written for Claude Code (the Code tab of the Claude
-  desktop app, or the claude CLI), opened in the repo folder, so Claude
-  can read SPEC.txt, create files, run tests and commit.
+  P1 and P2 use Claude Code (the Code tab of the Claude desktop app, or
+  the claude CLI), opened in the repo folder, so Claude can read SPEC.txt,
+  create files, run tests and commit.
+  P3 uses GOOGLE ANTIGRAVITY. The P3 file has its own setup section and an
+  "ANTIGRAVITY RULES" block at the top of every prompt - keep that block
+  when pasting. If P3 takes a P4 prompt, paste that same rules block first.
   If you use plain Claude chat instead, paste SPEC.txt first, then the
   prompt, and copy the files it writes by hand. Claude Code is strongly
   recommended.

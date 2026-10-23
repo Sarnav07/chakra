@@ -2,11 +2,36 @@
 P3 PROMPTS - Interface, pickups and handoff, dashboard, mess log, story
 Modules: M6 Interfaces, M7 Handoff + honesty badges, M11 Mess log +
          compost stop, cost slide and demo script
+TOOL: these prompts are written for the agent in GOOGLE ANTIGRAVITY.
 =====================================================================
+One-time Antigravity setup (2 minutes)
+- File > Open Folder > the cloned chakra/ folder. The workspace root
+  must be chakra/ (where SPEC.txt is), not a parent folder.
+- In the agent panel pick the strongest model your model picker offers,
+  and use Planning mode (not Fast) for every prompt: the agent then shows
+  a plan before it edits, and you approve it.
+- Keep terminal commands on "ask me / request review" rather than fully
+  automatic, at least for git commands. Read each command before allowing
+  it; refuse "git add .", "git add -A", "git push --force" and any rm/del
+  outside the files the prompt lists.
+- Set your git identity for this repo once, in the Antigravity terminal:
+    git config user.name "<your GitHub username>"
+    git config user.email "<the email on that GitHub account>"
+
 How to use
-- Open Claude Code in the repo folder (chakra/). Start a NEW session for
-  each prompt. Copy everything between the COPY lines, paste, send.
-- If Claude says STOP and asks something, answer it; never tell it to guess.
+- Start a NEW agent conversation for each prompt. Copy everything between
+  the COPY lines, paste, send.
+- Each prompt begins with an ANTIGRAVITY RULES block. Keep it: it stops
+  the agent from editing other people's files, guessing, or leaving
+  servers running.
+- When the agent shows its implementation plan, check that it touches only
+  the files the prompt lists. If it lists any other file, reply "Remove
+  <file> from the plan - not my file" before approving.
+- If the agent says STOP and asks something, answer it; never tell it to
+  guess.
+- When it finishes, check its walkthrough/report shows REAL command output
+  (npm run build, pytest). If it only says "should work", ask it to run
+  the checks and paste the output.
 - Do the prompts in order. Times are targets from the plan.
 - You create the frontend skeleton (P3-1) that P1, P2 and P4 build on, so
   push it as early as possible.
@@ -19,8 +44,26 @@ P3-0 | 09:00-09:05 | Tools
 Human: when P2 says "SPEC pushed" (about 09:02), git clone the repo.
 You do not need P2's backend skeleton to start P3-1.
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
 Task: tools only, no project code.
 1. Print git, node, npm and python versions. Node must be 18 or newer.
 2. Report a table: tool, version, OK/problem. Do not commit anything.
@@ -33,8 +76,27 @@ skeleton is pushed: follow SPEC Section 4 then.)
 P3-1 | 09:05-10:00 | Frontend skeleton, api.js, UI kit, every page stub
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Goal: a running React app with every route, the complete API client, the
 UI kit and a stub for every page, so P1, P2 and P4 can work in their own
@@ -105,8 +167,8 @@ Files you may create (nothing else):
     must finish without errors. If backend/app/main.py already exists
     (P2's skeleton), tell me the two commands to start backend and
     frontend and how to confirm http://localhost:5173/api/health returns
-    {"status":"ok"} through the proxy. Do not start long-running servers
-    yourself.
+    {"status":"ok"} through the proxy. You may run them in background terminals
+    to check, then stop them.
 11. Commit only the files above plus frontend/package-lock.json:
     "P3: frontend skeleton, api client, ui kit, page stubs", pull --rebase,
     push. Post in chat: "Frontend skeleton pushed - pull now".
@@ -117,8 +179,27 @@ Files you may create (nothing else):
 P3-2 | 10:00-12:30 | Risk map (M6)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Files you may edit/create: frontend/src/pages/RiskMap.jsx,
 frontend/src/components/BinMap.jsx
@@ -171,8 +252,27 @@ response has mock: true.
 P3-3 | 12:30-13:15 | Plan tomorrow: slider, alternatives, routes map (M6)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Files you may edit/create: frontend/src/pages/PlanTomorrow.jsx,
 frontend/src/components/RouteMap.jsx
@@ -218,8 +318,27 @@ Use src/api.js and src/ui only.
 P3-4 | 13:15-14:00 | Pickups, batches, compost arrival + Worker view (M6, M7)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Files you may edit/create: backend/app/pickups/service.py,
 backend/app/routers/pickups.py (both replace P2's stubs),
@@ -273,8 +392,27 @@ Frontend - Worker.jsx (phone-first, single column, big touch targets):
 P3-5 | 15:00-15:40 | Dashboard backend + page (M6, M7)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Files you may edit/create: backend/app/dashboard/service.py,
 backend/app/routers/dashboard.py (replace stubs),
@@ -318,8 +456,27 @@ backend/tests/test_p3_dashboard.py, frontend/src/pages/Dashboard.jsx
 P3-6 | 15:40-16:10 | Twin lab page (M5 frontend)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 File you may edit: frontend/src/pages/TwinLab.jsx
 1. getTwin(); on 404 show Notice "Twin results not cached" and a Button
@@ -350,8 +507,27 @@ File you may edit: frontend/src/pages/TwinLab.jsx
 P3-7 | 16:10-16:30 | Mess log backend + page (M11, STRETCH)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 build CHAKRA. First read SPEC.txt in the repository
-root completely and follow every rule in Section 0. Run git pull --rebase.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Run git pull --rebase.
 
 Files you may edit/create: backend/app/mess/service.py,
 backend/app/routers/mess.py (replace stubs), backend/tests/test_p3_mess.py,
@@ -384,8 +560,27 @@ frontend/src/pages/MessLog.jsx
 P3-8 | 16:30-17:00 | Cost slide text and demo script (no code)
 ######################################################################
 ----- COPY BELOW -----
-You are helping P3 prepare the CHAKRA presentation. First read SPEC.txt
-in the repository root completely and follow every rule in Section 0.
+ANTIGRAVITY RULES (follow all of them for this whole task):
+- You are the coding agent in Google Antigravity, working for P3 on the
+  CHAKRA project. The workspace root is the chakra/ git repository.
+- First open SPEC.txt in the workspace root and read it completely. Follow
+  every rule in its Section 0. SPEC.txt wins over anything you assume.
+- Before editing, show a plan that lists every file you will create or
+  change, and wait for my approval. Touch ONLY the files this prompt
+  allows. Do not reformat, rename, "clean up" or fix any other file, even
+  if you see a problem there - report it instead.
+- Do not add npm or pip packages beyond SPEC Section 2.
+- Run commands in the terminal one at a time and show their real output.
+  Windows PowerShell: no "&&" chaining. Never run "git add .", "git add -A"
+  or "git push --force".
+- You may start the backend/frontend dev servers in background terminals
+  and open a page in your browser tool to check it visually. Stop every
+  server you started before you finish.
+- Never invent numbers, API fields or library functions. If something is
+  missing or unclear in SPEC.txt, STOP and ask me.
+- Finish with a short report: files changed, commands run with their
+  real results, what works, what does not.
+Task: prepare the CHAKRA presentation text.
 Do not edit or create any file. Output plain text only.
 
 1. Cost slide: using ONLY SPEC Appendix A, write a slide title, a 6-row
