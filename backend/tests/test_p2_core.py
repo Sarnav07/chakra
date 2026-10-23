@@ -98,8 +98,9 @@ def test_request_validation(client):
                        json={"bin_id": "HA-1", "level": "low", "fill_pct": 20}).status_code == 422
     assert client.post("/api/reports", data={"bin_id": "HA-1", "kind": "spill",
                                              "reporter_role": "qr"}).status_code == 422
+    # empty test database: HA-1 does not exist -> 404 unknown bin
     assert client.post("/api/reports", data={"bin_id": "HA-1", "kind": "overflow",
-                                             "reporter_role": "qr"}).status_code == 200
+                                             "reporter_role": "qr"}).status_code == 404
     assert client.post("/api/classify", data={"bin_id": "HA-1"}).status_code == 503
 
 
