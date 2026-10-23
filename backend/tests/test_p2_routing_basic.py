@@ -112,7 +112,7 @@ def test_plan_routes_recommends_cheapest_feasible():
     result = plan_routes(MIXED)
     alts = result["alternatives"]
     assert [a["fleet_size"] for a in alts] == [1, 2, 3]
-    assert all(r["solver"] == "cluster_nearest_neighbor" for a in alts for r in a["routes"])
+    assert all(r["solver"] == "ortools" for a in alts for r in a["routes"])
     feasible = [a for a in alts if a["feasible"]]
     best = min(feasible, key=lambda a: (a["total_cost_rs"], a["total_km"]))
     assert result["recommended_fleet_size"] == best["fleet_size"]

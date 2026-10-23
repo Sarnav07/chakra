@@ -59,7 +59,7 @@ def _check_t4_t6(stops, alt):
         assert {stream_of[b] for b in r["ordered_bin_ids"]} == {r["stream"]}
         assert r["start_node"] == "DEPOT"
         assert r["end_node"] == ("COMPOST" if r["stream"] == "food" else "DEPOT")
-        assert r["solver"] == "cluster_nearest_neighbor"
+        assert r["solver"] == "ortools"
     # T4: infeasible -> the reason is listed (unassigned or another violation)
     if not alt["feasible"]:
         assert check_alternative(alt, list(stream_of), SETTINGS)
