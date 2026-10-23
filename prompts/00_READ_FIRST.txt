@@ -12,7 +12,8 @@ FILES
   P3_Interface_Pickups_MessLog.txt P3: frontend skeleton, risk map, plan,
                                    worker, dashboard, twin lab, mess log,
                                    cost slide text, demo script
-  P4_UIUX_Floating.txt             UI/UX polish, taken by whoever is free
+  P4_UIUX_Floating.txt             builds the approved mockup (design/mockup/)
+                                   into the app; taken by whoever is free
 
 WHICH CLAUDE
   P1 and P2 use Claude Code (the Code tab of the Claude desktop app, or
@@ -66,8 +67,9 @@ and confirm whether anything may be prepared before 09:00)
   16:30-17:00  P1-9 demo examples      P2-9 FREEZE: caches,    P3-8 cost slide
                                        final checks            + demo script
   17:00-18:00  Rehearse, record the backup video, submit.
-  P4 prompts: whoever is ahead claims the next one (P4-1 first). If nobody
-  is free before 16:30, run P4-1 and P4-2 only, during the freeze.
+  P4 prompts: whoever is ahead claims the next one (P4-1 first, after
+  P3-1 is pushed). If time is short, run P4-1, P4-2, P4-3 and P4-4 (Home):
+  they restyle every page at once through the shared kit.
 
 TEAM-CHAT MESSAGES THAT UNBLOCK OTHERS
   P2: "SPEC pushed"            -> P3 clones and starts P3-1
@@ -91,7 +93,7 @@ IF YOU FALL BEHIND - CUT IN THIS ORDER
   2 P2-8 Scale lab
   3 P3-7 Mess log (M11)
   4 P1-8 real evidence
-  5 P4 prompts after P4-2
+  5 P4 prompts after P4-4
   Never cut: the twin (P1-5), the trade-off chart (P3-6), reports (P2-6).
 
 IF SOMETHING BREAKS

@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CHAKRA - Home</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#252B31}a:hover{color:#000000}
+/* Leaf icon: Lucide (ISC License, (c) Lucide Icons and Contributors) via AnimateIcons (MIT License, (c) 2025 Avijit Dey) */
+.chakra-leaf{transform-box:view-box;transform-origin:13px 12px}
+.chakra-logo:hover .chakra-leaf{animation:chakraLeafSway .8s ease-in-out}
+@keyframes chakraLeafSway{0%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes chakraFadeUp10{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes chakraFadeUp16{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes chakraFadeUp30{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="height: 100vh; min-height: 760px; display: flex; flex-direction: column; overflow: hidden; background: #FFFFFF; color: #252B31; font-family: Inter, sans-serif; position: relative">
+
+  <video src="/_blob/b53c54ab493d3988caccfdb23a9dd2c6" autoplay="" muted="" loop="" playsinline="" aria-hidden="true" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0"></video>
+
+  <header style="position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 80px; font-family: Inter, sans-serif">
+    <a href="Home.dc.html" class="chakra-logo" style="display: inline-flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: #252B31; text-decoration: none"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="chakra-leaf" d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>CHAKRA</a>
+    <nav aria-label="Main" style="display: flex; align-items: center; gap: 32px; flex-wrap: wrap; justify-content: flex-end">
+      <a href="Home.dc.html" aria-current="page" style="font-size: 14px; color: #252B31; text-decoration: none">Home</a>
+      <a href="Main.dc.html" style="font-size: 14px; color: #5E6A6B; text-decoration: none">Risk map</a>
+      <a href="Plan.dc.html" style="font-size: 14px; color: #5E6A6B; text-decoration: none">Plan tomorrow</a>
+      <a href="Twin.dc.html" style="font-size: 14px; color: #5E6A6B; text-decoration: none">Twin lab</a>
+      <a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 20px; border-radius: 999px; background: #252B31; color: #FFFFFF; font-size: 14px; font-weight: 500; text-decoration: none">Open the app</a>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 10; flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; width: 100%; padding: 28px 24px 0; box-sizing: border-box">
+
+    <div style="display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; border: 1px solid #E5E5E5; background: #FFFFFF; padding: 6px 16px; font-size: 14px; color: #5E6A6B; margin-bottom: 24px; animation: chakraFadeUp10 0.5s ease both">
+      <span style="width: 7px; height: 7px; border-radius: 50%; background: {{accent}}"></span>
+      SOCIOTHON 2026 · Prototype on simulated data
+    </div>
+
+    <h1 style="margin: 0; text-align: center; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 80px; line-height: 0.95; letter-spacing: -0.02em; color: #252B31; max-width: 640px; animation: chakraFadeUp16 0.6s ease 0.1s both">Waste collection that sees <em style="font-style: italic; color: {{accent}}">tomorrow</em></h1>
+
+    <p style="margin: 16px 0 0; text-align: center; font-size: 18px; line-height: 1.65; color: #5E6A6B; max-width: 650px; animation: chakraFadeUp16 0.6s ease 0.2s both">CHAKRA forecasts which campus bins will overflow by the end of tomorrow, plans capacity-safe routes for only those bins, and proves the trade-off on a 30-day digital twin.</p>
+
+    <div style="margin-top: 20px; display: flex; align-items: center; gap: 12px; animation: chakraFadeUp16 0.6s ease 0.3s both">
+      <a href="Main.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 24px; border-radius: 999px; background: #252B31; color: #FFFFFF; font-size: 14px; font-weight: 500; text-decoration: none">Open the risk map</a>
+      <a href="Twin.dc.html" aria-label="See the 30-day twin" style="display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: #FFFFFF; box-shadow: 0 2px 12px rgba(0,0,0,0.08); text-decoration: none">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="#252B31"></path></svg>
+      </a>
+    </div>
+
+    <figure aria-label="Preview of the CHAKRA dispatcher screen with sample data" style="margin: 32px 0 0; width: 100%; max-width: 1024px; animation: chakraFadeUp30 0.8s ease 0.5s both">
+      <div style="border-radius: 16px; overflow: hidden; padding: 14px; background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 25px 80px -12px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.06)">
+        <div aria-hidden="true" style="background: #FFFFFF; border-radius: 10px; border: 1px solid #E5E5E5; overflow: hidden; font-size: 11px; user-select: none; pointer-events: none">
+
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #E5E5E5">
+            <div style="display: flex; align-items: center; gap: 8px">
+              <span style="width: 22px; height: 22px; border-radius: 6px; background: #252B31; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 11px">C</span>
+              <span style="font-weight: 600; font-size: 12px">CHAKRA</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5E6A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"></path></svg>
+            </div>
+            <div style="flex: 0 1 300px; display: flex; align-items: center; gap: 6px; background: #F5F5F5; border-radius: 8px; padding: 6px 10px; color: #5E6A6B">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5E6A6B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+              <span style="flex: 1">Search bins, routes, reports</span>
+              <span style="border: 1px solid #E5E5E5; background: #FFFFFF; border-radius: 4px; padding: 0 4px; font-size: 10px">⌘K</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span style="font-weight: 500">Plan routes</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#252B31" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>
+              <span style="width: 22px; height: 22px; border-radius: 50%; background: #E3EFE8; color: #14492F; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 10px">DS</span>
+            </div>
+          </div>
+
+          <div style="display: flex">
+            <div style="width: 160px; flex: none; border-right: 1px solid #E5E5E5; padding: 10px 8px; display: flex; flex-direction: column; gap: 2px">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; background: #F5F5F5; font-weight: 600">Risk map</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Plan tomorrow</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Worker</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Reports <span style="background: #252B31; color: #FFFFFF; border-radius: 999px; padding: 0 6px; font-size: 10px">3</span></div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Check an item</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Mess log <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5E6A6B" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Twin lab</div>
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; color: #3F4A4B">Dashboard <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#5E6A6B" stroke-width="2"><path d="M9 6l6 6-6 6"></path></svg></div>
+              <div style="padding: 12px 8px 4px; font-size: 10px; color: #5E6A6B; font-weight: 600; letter-spacing: 0.04em">DATA</div>
+              <div style="padding: 6px 8px; color: #3F4A4B">Bins</div>
+              <div style="padding: 6px 8px; color: #3F4A4B">Vehicles</div>
+              <div style="padding: 6px 8px; color: #3F4A4B">Scenario</div>
+              <div style="padding: 6px 8px; color: #3F4A4B">Settings</div>
+            </div>
+
+            <div style="flex: 1 1 auto; min-width: 0; background: #FAFAFA; padding: 14px 16px; display: flex; flex-direction: column; gap: 12px">
+              <div style="display: flex; align-items: baseline; justify-content: space-between">
+                <span style="font-size: 14px; font-weight: 600">Good evening, Dispatcher</span>
+                <span style="font-size: 10px; color: #5E6A6B">Plan for tomorrow, 25 Oct · sample data</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px">
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: {{accent}}; color: #FFFFFF; font-weight: 500">Plan routes</span>
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: #FFFFFF; border: 1px solid #E5E5E5">Tap a level</span>
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: #FFFFFF; border: 1px solid #E5E5E5">Report overflow</span>
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: #FFFFFF; border: 1px solid #E5E5E5">Check an item</span>
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: #FFFFFF; border: 1px solid #E5E5E5">Mess log</span>
+                <span style="border-radius: 999px; padding: 4px 10px; font-size: 10px; background: #FFFFFF; border: 1px solid #E5E5E5">Reset demo</span>
+                <span style="font-size: 10px; color: #5E6A6B; margin-left: 4px">Customize</span>
+              </div>
+
+              <div style="display: flex; gap: 12px">
+                <div style="flex: 1 1 0; min-width: 0; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 6px">
+                  <div style="display: flex; align-items: center; gap: 6px; font-weight: 500">Bins to visit tomorrow
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M8 12.5l2.5 2.5L16 9.5"></path></svg>
+                  </div>
+                  <div style="font-size: 26px; font-weight: 600; letter-spacing: -0.01em">18<span style="font-size: 12px; color: #5E6A6B; font-weight: 400"> of 50 · τ 0.50</span></div>
+                  <div style="display: flex; gap: 12px; font-size: 10px">
+                    <span style="color: #5E6A6B">Last 14 days avg fill</span>
+                    <span style="color: #8C1D1D; font-weight: 600">3 overflowing now</span>
+                    <span style="color: #8A5A00; font-weight: 600">2 need review</span>
+                  </div>
+                  <svg width="100%" height="80" viewBox="0 0 300 80" preserveAspectRatio="none">
+                    <defs>
+                      <linearGradient id="chakraFill" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="{{accent}}" stop-opacity="0.15"></stop>
+                        <stop offset="100%" stop-color="{{accent}}" stop-opacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                    <path d="M0 58 C 25 54, 45 40, 75 44 S 125 30, 150 36 S 200 22, 230 30 S 275 16, 300 20 L 300 80 L 0 80 Z" fill="url(#chakraFill)"></path>
+                    <path d="M0 58 C 25 54, 45 40, 75 44 S 125 30, 150 36 S 200 22, 230 30 S 275 16, 300 20" fill="none" stroke="{{accent}}" stroke-width="1.5"></path>
+                  </svg>
+                </div>
+
+                <div style="flex: 1 1 0; min-width: 0; background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 10px; padding: 12px; display: flex; flex-direction: column">
+                  <div style="display: flex; align-items: center; justify-content: space-between; font-weight: 500">
+                    <span>Fleet options</span>
+                    <span style="display: flex; gap: 8px">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5E6A6B" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="#5E6A6B"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg>
+                    </span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 12px"><span>1 vehicle</span><span style="color: #8C1D1D">Manual dispatch required</span></div>
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 12px"><span style="font-weight: 600">2 vehicles · recommended</span><span style="font-variant-numeric: tabular-nums">9.8 km · Rs 1,718</span></div>
+                  <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 12px"><span>3 vehicles</span><span style="font-variant-numeric: tabular-nums">10.6 km · Rs 2,527</span></div>
+                </div>
+              </div>
+
+              <div style="background: #FFFFFF; border: 1px solid #E5E5E5; border-radius: 10px; padding: 12px">
+                <div style="font-weight: 600; font-size: 12px; margin-bottom: 8px">Recent pickups</div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 11px">
+                  <thead>
+                    <tr style="color: #5E6A6B; text-align: left">
+                      <th scope="col" style="font-weight: 500; padding: 4px 0">Time</th>
+                      <th scope="col" style="font-weight: 500; padding: 4px 0">Bin</th>
+                      <th scope="col" style="font-weight: 500; padding: 4px 0">Volume</th>
+                      <th scope="col" style="font-weight: 500; padding: 4px 0">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td style="padding: 6px 0">09:12</td><td>Hostel C bin 1</td><td>216 L</td><td><span style="color: #1E6B47; font-weight: 600">Done</span></td></tr>
+                    <tr><td style="padding: 6px 0">09:20</td><td>Hostel A bin 1</td><td>187 L</td><td><span style="color: #1E6B47; font-weight: 600">Done</span></td></tr>
+                    <tr><td style="padding: 6px 0">09:31</td><td>Mess 2 food bin 2</td><td>82 L</td><td><span style="color: #1E6B47; font-weight: 600">Delivered to compost</span></td></tr>
+                    <tr><td style="padding: 6px 0">09:40</td><td>Hostel D bin 4</td><td>-</td><td><span style="color: #8A5A00; font-weight: 600">Pending</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </figure>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1E6B47","options":["#1E6B47","#4F46E5","#252B31"]},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#1E6B47' };
+  }
+}
+</script>
+</body>
+</html>

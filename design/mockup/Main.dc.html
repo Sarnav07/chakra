@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CHAKRA - Risk map</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#252B31}a:hover{color:#000000}
+/* Leaf icon: Lucide (ISC License, (c) Lucide Icons and Contributors) via AnimateIcons (MIT License, (c) 2025 Avijit Dey) */
+.chakra-leaf{transform-box:view-box;transform-origin:13px 12px}
+.chakra-logo:hover .chakra-leaf{animation:chakraLeafSway .8s ease-in-out}
+@keyframes chakraLeafSway{0%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(7deg)}75%{transform:rotate(-3deg)}100%{transform:rotate(0)}}
+@keyframes chakraFadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</helmet>
+<div style="position: relative; min-height: 1000px; color: #252B31; font-family: Inter, sans-serif; background: #F3F6F4">
+  <video src="/_blob/b53c54ab493d3988caccfdb23a9dd2c6" autoplay="" muted="" loop="" playsinline="" aria-hidden="true" style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0"></video>
+  <div aria-hidden="true" style="position: fixed; inset: 0; background: rgba(255,255,255,0.30); z-index: 0"></div>
+
+  <header style="position: relative; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 20px 6%">
+    <a href="Home.dc.html" class="chakra-logo" style="display: inline-flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: #252B31; text-decoration: none"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="{{accent}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="chakra-leaf" d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>CHAKRA</a>
+    <nav aria-label="Main" style="display: flex; align-items: center; gap: 8px 28px; flex-wrap: wrap">
+      <a href="Home.dc.html" style="font-size: 14px; color: #3F4A4B; text-decoration: none">Home</a>
+      <a href="Main.dc.html" aria-current="page" style="font-size: 14px; font-weight: 600; color: #252B31; text-decoration: none; border-bottom: 2px solid {{accent}}; padding-bottom: 2px">Risk map</a>
+      <a href="Plan.dc.html" style="font-size: 14px; color: #3F4A4B; text-decoration: none">Plan tomorrow</a>
+      <a href="Worker.dc.html" style="font-size: 14px; color: #3F4A4B; text-decoration: none">Worker</a>
+      <a href="Check.dc.html" style="font-size: 14px; color: #3F4A4B; text-decoration: none">Check an item</a>
+      <a href="Twin.dc.html" style="font-size: 14px; color: #3F4A4B; text-decoration: none">Twin lab</a>
+      <button type="button" style="min-height: 40px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(37,43,49,0.15); background: rgba(255,255,255,0.85); color: #252B31; font: 500 14px Inter, sans-serif; cursor: pointer">Reset demo</button>
+    </nav>
+  </header>
+
+  <main style="position: relative; z-index: 10; max-width: 1180px; margin: 0 auto; padding: 8px 24px 48px; display: flex; flex-direction: column; gap: 20px; animation: chakraFadeUp 0.6s ease both">
+
+    <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <span style="display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: rgba(255,255,255,0.9); border: 1px solid #E5E5E5; padding: 5px 12px; font-size: 12px; font-weight: 600; color: #1E6B47"><span style="width: 7px; height: 7px; border-radius: 50%; background: #1E6B47"></span>IMPLEMENTED</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; background: rgba(255,255,255,0.9); border: 1px solid #E5E5E5; padding: 5px 12px; font-size: 12px; font-weight: 600; color: #9A3F10"><span style="width: 7px; height: 7px; border-radius: 50%; background: #B04A14"></span>SIMULATED DATA</span>
+        </div>
+        <h1 style="margin: 0; font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 56px; line-height: 1; letter-spacing: -0.02em">Risk <em style="color: {{accent}}">map</em></h1>
+        <p style="margin: 0; color: #3F4A4B; font-size: 17px">Chance each bin overflows by the end of tomorrow</p>
+      </div>
+      <div style="display: inline-flex; align-items: center; gap: 12px; border-radius: 999px; background: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.7); padding: 8px 8px 8px 18px; font-size: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.08)">
+        <span>Risk threshold <strong>τ = 0.50</strong></span>
+        <a href="Plan.dc.html" style="display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; border-radius: 999px; background: #252B31; color: #FFFFFF; font-weight: 500; text-decoration: none">Change</a>
+      </div>
+    </div>
+
+    <section aria-label="Summary" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px">
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Selected</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">18</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Skipped</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">26</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Needs review</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">2</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Reported</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">1</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Overflowing now</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">3</div>
+      </div>
+      <div style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 14px 16px">
+        <div style="font-size: 12px; color: #5E6A6B; font-weight: 500">Expected overflows among skipped</div>
+        <div style="font-size: 30px; font-weight: 600; font-variant-numeric: tabular-nums">0.84</div>
+      </div>
+    </section>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+
+      <section aria-label="Campus map" style="flex: 999 1 560px; min-width: 0; background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 25px 80px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; overflow: hidden">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 16px">
+          <span style="font-weight: 600; font-size: 15px">Campus bins <span style="font-weight: 400; color: #5E6A6B">(sample of 12)</span></span>
+          <div role="group" aria-label="Filter" style="display: flex; gap: 6px; flex-wrap: wrap">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="5">
+              <button type="button" onClick="{{ f.pick }}" aria-pressed="{{ f.pressed }}" style="min-height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid {{ f.border }}; background: {{ f.bg }}; color: {{ f.fg }}; font: 500 13px Inter, sans-serif; cursor: pointer">{{ f.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="position: relative; height: 520px; background: #EEF3EF; margin: 0 12px; border-radius: 12px; overflow: hidden">
+          <svg aria-hidden="true" width="100%" height="100%" viewBox="0 0 800 520" preserveAspectRatio="none" style="position: absolute; inset: 0">
+            <path d="M0 300 C 200 280, 360 330, 800 290" stroke="#FFFFFF" stroke-width="14" fill="none"></path>
+            <path d="M260 0 C 280 160, 240 360, 300 520" stroke="#FFFFFF" stroke-width="12" fill="none"></path>
+            <path d="M560 0 L 540 520" stroke="#FFFFFF" stroke-width="10" fill="none"></path>
+            <rect x="60" y="60" width="150" height="90" rx="10" fill="#E0E8E3"></rect>
+            <rect x="340" y="70" width="160" height="110" rx="10" fill="#E0E8E3"></rect>
+            <rect x="610" y="90" width="140" height="120" rx="10" fill="#E0E8E3"></rect>
+            <rect x="80" y="360" width="140" height="110" rx="10" fill="#E0E8E3"></rect>
+            <rect x="360" y="370" width="150" height="100" rx="10" fill="#E0E8E3"></rect>
+            <rect x="620" y="350" width="130" height="120" rx="10" fill="#E0E8E3"></rect>
+          </svg>
+          <sc-for list="{{ bins }}" as="b" hint-placeholder-count="12">
+            <button type="button" onClick="{{ b.pick }}" aria-label="{{ b.aria }}" style="position: absolute; left: {{ b.x }}%; top: {{ b.y }}%; width: {{ b.size }}px; height: {{ b.size }}px; margin: -11px 0 0 -11px; border-radius: 50%; background: {{ b.color }}; border: {{ b.border }}; opacity: {{ b.opacity }}; cursor: pointer; padding: 0; box-shadow: 0 2px 6px rgba(0,0,0,0.15)"></button>
+          </sc-for>
+          <div style="position: absolute; left: 48%; top: 54%; display: flex; align-items: center; gap: 6px; transform: translate(-8px, -8px)">
+            <span style="display: inline-block; width: 16px; height: 16px; border-radius: 4px; background: #252B31"></span>
+            <span style="background: #FFFFFF; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px">Depot</span>
+          </div>
+          <div style="position: absolute; left: 86%; top: 10%; display: flex; align-items: center; gap: 6px; transform: translate(-8px, -8px)">
+            <span style="display: inline-block; width: 16px; height: 16px; border-radius: 4px; background: #6B4A1E"></span>
+            <span style="background: #FFFFFF; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px">Compost stop</span>
+          </div>
+          <div style="position: absolute; left: 12px; bottom: 12px; background: rgba(255,255,255,0.92); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #3F4A4B; box-shadow: 0 2px 12px rgba(0,0,0,0.08)">
+            <div style="font-weight: 600; color: #252B31">Legend</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #2E9D5B"></span>Low risk (under 30%)</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #E0A21B"></span>Medium risk (30-60%)</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #D2452F"></span>High risk (60% +)</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #7A1010"></span>Overflowing now</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 12px; height: 12px; border-radius: 50%; background: #7B3FC2"></span>Reported</div>
+            <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 2px dashed #6B7078"></span>Needs review</div>
+          </div>
+        </div>
+        <div style="padding: 10px 16px 14px; font-size: 12px; color: #5E6A6B">Mockup background. The real map uses OpenStreetMap tiles; bins are drawn as circles.</div>
+      </section>
+
+      <aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+        <section style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 25px 80px -12px rgba(0,0,0,0.12), 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 8px">
+            <div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 26px; line-height: 1.1">{{ sel.name }}</div>
+              <div style="font-size: 13px; color: #5E6A6B">{{ sel.id }} · {{ sel.group }}</div>
+            </div>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: {{ sel.pillBg }}; color: {{ sel.pillFg }}"><span style="width: 8px; height: 8px; border-radius: 50%; background: {{ sel.color }}"></span>{{ sel.status }}</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #5E6A6B">Current fill</span><strong style="font-variant-numeric: tabular-nums">{{ sel.fillText }}</strong></div>
+            <div style="height: 8px; background: #E8ECEA; border-radius: 999px; overflow: hidden"><div style="height: 8px; width: {{ sel.fillW }}%; background: {{ sel.color }}"></div></div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #5E6A6B">Forecast end of tomorrow</span><strong style="font-variant-numeric: tabular-nums">{{ sel.predText }}</strong></div>
+            <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #5E6A6B">Chance of overflow</span><strong style="font-variant-numeric: tabular-nums">{{ sel.pText }}</strong></div>
+          </div>
+          <p style="margin: 0; font-size: 13px; background: rgba(37,43,49,0.05); border-radius: 12px; padding: 10px 12px; color: #3F4A4B">{{ sel.reason }}</p>
+          <div>
+            <div style="font-size: 12px; color: #5E6A6B; margin-bottom: 6px">Tap the level you see</div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+              <button type="button" style="min-height: 44px; border-radius: 999px; border: 1px solid rgba(37,43,49,0.15); background: #FFFFFF; font: 500 14px Inter, sans-serif; color: #252B31; cursor: pointer">Low</button>
+              <button type="button" style="min-height: 44px; border-radius: 999px; border: 1px solid rgba(37,43,49,0.15); background: #FFFFFF; font: 500 14px Inter, sans-serif; color: #252B31; cursor: pointer">Medium</button>
+              <button type="button" style="min-height: 44px; border-radius: 999px; border: 1px solid rgba(37,43,49,0.15); background: #FFFFFF; font: 500 14px Inter, sans-serif; color: #252B31; cursor: pointer">Full</button>
+            </div>
+          </div>
+        </section>
+
+        <section style="background: rgba(255,255,255,0.82); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(0,0,0,0.05); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 10px">
+          <div style="font-family: 'Instrument Serif', serif; font-size: 24px">Review <em>queue</em></div>
+          <div style="font-size: 13px; color: #5E6A6B">No fresh reading in 36 h. These bins are visited, never silently skipped.</div>
+          <button type="button" onClick="{{ pickHD }}" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px dashed #6B7078; background: #FFFFFF; font: 500 14px Inter, sans-serif; color: #252B31; cursor: pointer"><span>Hostel D bin 4</span><span style="color: #5E6A6B; font-size: 12px">2 days ago</span></button>
+          <button type="button" style="display: flex; justify-content: space-between; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px dashed #6B7078; background: #FFFFFF; font: 500 14px Inter, sans-serif; color: #252B31; cursor: pointer"><span>Dept 3 bin 2</span><span style="color: #5E6A6B; font-size: 12px">no reading</span></button>
+        </section>
+      </aside>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#1E6B47","options":["#1E6B47","#4F46E5","#252B31"]},"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  state = { sel: 'HA-1', filter: 'all' };
+
+  renderVals() {
+    const BINS = [
+      { id: 'HA-1', name: 'Hostel A bin 1', group: 'Hostel A', x: 14, y: 20, fill: 78, pred: 104, p: 0.74, rc: 'p_over_tau' },
+      { id: 'HA-2', name: 'Hostel A bin 2', group: 'Hostel A', x: 22, y: 30, fill: 22, pred: 58, p: 0.01, rc: 'below_tau' },
+      { id: 'HB-3', name: 'Hostel B bin 3', group: 'Hostel B', x: 48, y: 18, fill: 64, pred: 92, p: 0.31, rc: 'below_tau' },
+      { id: 'HC-1', name: 'Hostel C bin 1', group: 'Hostel C', x: 58, y: 28, fill: 100, pred: 128, p: 0.99, rc: 'overflowing_now' },
+      { id: 'M1-G1', name: 'Mess 1 general bin 1', group: 'Mess 1', x: 82, y: 26, fill: 71, pred: 109, p: 0.82, rc: 'p_over_tau' },
+      { id: 'M1-F1', name: 'Mess 1 food bin 1', group: 'Mess 1', x: 88, y: 36, fill: 55, pred: 88, p: 0.18, rc: 'below_tau' },
+      { id: 'D2-1', name: 'Dept 2 bin 1', group: 'Dept 2', x: 18, y: 76, fill: 18, pred: 31, p: 0.0, rc: 'below_tau' },
+      { id: 'HD-4', name: 'Hostel D bin 4', group: 'Hostel D', x: 28, y: 84, fill: null, pred: null, p: null, rc: 'needs_review' },
+      { id: 'HE-2', name: 'Hostel E bin 2', group: 'Hostel E', x: 52, y: 78, fill: 40, pred: 63, p: 0.02, rc: 'reported' },
+      { id: 'M2-F2', name: 'Mess 2 food bin 2', group: 'Mess 2', x: 62, y: 70, fill: 68, pred: 101, p: 0.55, rc: 'p_over_tau' },
+      { id: 'D1-2', name: 'Dept 1 bin 2', group: 'Dept 1', x: 80, y: 74, fill: 35, pred: 49, p: 0.0, rc: 'below_tau' },
+      { id: 'HF-5', name: 'Hostel F bin 5', group: 'Hostel F', x: 88, y: 84, fill: 83, pred: 112, p: 0.91, rc: 'p_over_tau' }
+    ];
+    const color = (b) => {
+      if (b.rc === 'overflowing_now') return '#7A1010';
+      if (b.rc === 'reported') return '#7B3FC2';
+      if (b.rc === 'needs_review') return '#FFFFFF';
+      if (b.p < 0.3) return '#2E9D5B';
+      if (b.p < 0.6) return '#E0A21B';
+      return '#D2452F';
+    };
+    const STATUS = {
+      overflowing_now: ['Overflowing', '#F6E3E3', '#7A1010'],
+      reported: ['Reported', '#EFE6FA', '#5A2A96'],
+      needs_review: ['Needs review', '#EDEEF0', '#3D4248'],
+      p_over_tau: ['Selected', '#E3EFE8', '#14492F'],
+      below_tau: ['Skipped', '#EEF1EF', '#3F4A4B']
+    };
+    const REASON = {
+      overflowing_now: (b) => 'Overflowing now (last reading ' + b.fill + '%)',
+      reported: () => 'Reported overflow by staff - open',
+      needs_review: () => 'No fresh reading in 36 h - visit and tap a level',
+      p_over_tau: (b) => Math.round(b.p * 100) + '% chance of overflow tomorrow, above tau = 0.50',
+      below_tau: (b) => Math.round(b.p * 100) + '% chance of overflow tomorrow, below tau = 0.50'
+    };
+    const inFilter = (b) => {
+      const f = this.state.filter;
+      if (f === 'all') return true;
+      if (f === 'selected') return b.rc !== 'below_tau';
+      if (f === 'skipped') return b.rc === 'below_tau';
+      if (f === 'review') return b.rc === 'needs_review';
+      if (f === 'reported') return b.rc === 'reported';
+      return true;
+    };
+    const bins = BINS.map((b) => {
+      const isSel = b.id === this.state.sel;
+      const dashed = b.rc === 'needs_review';
+      return {
+        x: b.x, y: b.y,
+        size: isSel ? 26 : 22,
+        color: color(b),
+        border: dashed ? '3px dashed #6B7078' : (isSel ? '3px solid #252B31' : '2px solid #FFFFFF'),
+        opacity: inFilter(b) ? 1 : 0.25,
+        aria: b.name + ', ' + STATUS[b.rc][0],
+        pick: () => this.setState({ sel: b.id })
+      };
+    });
+    const s = BINS.find((b) => b.id === this.state.sel) || BINS[0];
+    const st = STATUS[s.rc];
+    const sel = {
+      id: s.id, name: s.name, group: s.group,
+      status: st[0], pillBg: st[1], pillFg: st[2],
+      color: s.rc === 'needs_review' ? '#6B7078' : color(s),
+      fillText: s.fill === null ? 'no reading' : s.fill + '%',
+      fillW: s.fill === null ? 0 : s.fill,
+      predText: s.pred === null ? '-' : s.pred + '%',
+      pText: s.p === null ? '-' : Math.round(s.p * 100) + '%',
+      reason: REASON[s.rc](s)
+    };
+    const FILTERS = [['all', 'All'], ['selected', 'Visit'], ['skipped', 'Skipped'], ['review', 'Review'], ['reported', 'Reported']];
+    const accent = this.props.accent ?? '#1E6B47';
+    const filters = FILTERS.map(([key, label]) => {
+      const on = this.state.filter === key;
+      return {
+        label,
+        pressed: on ? 'true' : 'false',
+        bg: on ? '#252B31' : '#FFFFFF',
+        fg: on ? '#FFFFFF' : '#3F4A4B',
+        border: on ? '#252B31' : 'rgba(37,43,49,0.15)',
+        pick: () => this.setState({ filter: key })
+      };
+    });
+    return { accent, bins, sel, filters, pickHD: () => this.setState({ sel: 'HD-4' }) };
+  }
+}
+</script>
+</body>
+</html>
