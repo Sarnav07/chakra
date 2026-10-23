@@ -1,22 +1,19 @@
 """Scale lab endpoints (owner P2)."""
-import json
-
 from fastapi import APIRouter, HTTPException
 
-from app.config import DEMO_CACHE_DIR
+from app.scale_lab.run import load_scale_cache, run_scale_lab
 
 router = APIRouter(tags=["scale"])
-
-SCALE_CACHE = DEMO_CACHE_DIR / "scale_lab.json"
 
 
 @router.get("/scale-lab")
 def get_scale_lab():
-    if not SCALE_CACHE.exists():
+    cached = load_scale_cache()
+    if cached is None:
         raise HTTPException(404, "Scale lab not cached - run POST /api/scale-lab/run")
-    return json.loads(SCALE_CACHE.read_text(encoding="utf-8"))
+    return cached
 
 
 @router.post("/scale-lab/run")
-def run_scale_lab():
-    raise HTTPException(501, "Not built yet")
+def post_scale_lab_run():
+    return run_scale_lab()

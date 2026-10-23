@@ -1,0 +1,38 @@
+{
+  "generated_at": "2026-10-24T04:44:14+05:30",
+  "synthetic": true,
+  "instances": [
+    {
+      "name": "campus",
+      "bins": 50,
+      "vehicles": 2,
+      "source": "synthetic_fallback",
+      "three_stage": {
+        "km": 10.992,
+        "runtime_s": 0.125,
+        "feasible": true
+      },
+      "nearest_neighbor": {
+        "km": 14.055,
+        "runtime_s": 0.002,
+        "feasible": true
+      }
+    },
+    {
+      "name": "city",
+      "bins": 2000,
+      "vehicles": 30,
+      "source": "synthetic",
+      "three_stage": {
+        "km": 689.312,
+        "runtime_s": 2.663,
+        "feasible": true
+      },
+      "nearest_neighbor": {
+        "km": 704.611,
+        "runtime_s": 3.612,
+        "feasible": true
+      }
+    }
+  ]
+}
