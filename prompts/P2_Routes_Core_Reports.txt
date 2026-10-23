@@ -1,0 +1,503 @@
+=====================================================================
+P2 PROMPTS - Routes, shared core, reports, scale lab
+Modules: M0 Shared core, M4 Three-stage routing, M10 Reports, M8 Scale lab
+You are also the INTEGRATION OWNER (you run the 14:00 checkpoint).
+=====================================================================
+How to use
+- Open Claude Code in the repo folder (chakra/). Start a NEW session for
+  each prompt. Copy everything between the COPY lines, paste, send.
+- If Claude says STOP and asks something, answer it; do not tell it to
+  guess.
+- Do the prompts in order. Times are targets from the plan.
+---------------------------------------------------------------------
+
+
+######################################################################
+P2-0 | before 09:00 or first 10 minutes | Repo and tools
+######################################################################
+Human steps first (Claude cannot do these for you):
+  1. Create an empty PRIVATE GitHub repo named "chakra" and add P1 and P3
+     as collaborators.
+  2. git clone it to your laptop, copy SPEC.txt into the repo root, then
+       git add SPEC.txt
+       git commit -m "P2: add SPEC"
+       git push
+     and post "SPEC pushed" in the team chat (P3 starts the frontend now).
+  3. Install Node 18+ if missing. Python 3.12 is installed in the prompt.
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0.
+Task: check my tools only. Do not create project files yet.
+1. Print: git --version, node --version, npm --version, python --version.
+2. If python is not 3.12, follow SPEC Section 4 "Way A" exactly to get a
+   Python 3.12 virtual environment at backend/.venv (create the backend/
+   folder if needed). Show the output of backend\.venv\Scripts\python --version.
+3. Report a table: tool, version found, OK or problem. If anything is
+   missing, tell me the exact install step. Do not commit anything.
+----- END -----
+
+
+######################################################################
+P2-1 | 09:00-09:25 | Shared core, every stub, push the skeleton (M0)
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0.
+
+Goal: create the backend skeleton so that every endpoint in SPEC Section
+14 exists and returns a response of the exact documented shape (mock data
+where the real owner has not built it yet). Other team members start from
+this push, so correctness of names and shapes matters more than features.
+
+Files you may create in this task (nothing else):
+  .gitignore
+  backend/requirements.txt, backend/pytest.ini
+  backend/app/__init__.py, main.py, config.py, db.py, schemas.py, mock_data.py
+  backend/app/routers/__init__.py, core.py, data.py, twin.py, classify.py,
+    routes.py, reports.py, scale.py, pickups.py, mess.py, dashboard.py
+  backend/app/forecast/__init__.py, model.py
+  backend/app/selection/__init__.py, select.py
+  backend/app/twin/__init__.py, policies.py
+  backend/app/classifier/__init__.py, infer.py
+  backend/app/pickups/__init__.py, service.py
+  backend/app/mess/__init__.py, service.py
+  backend/app/dashboard/__init__.py, service.py
+  backend/app/reports/__init__.py, service.py
+  backend/app/routing/__init__.py
+  backend/app/scale_lab/__init__.py, run.py
+  backend/tests/__init__.py (empty), conftest.py, test_p2_core.py
+Do NOT create: backend/app/seed.py, backend/app/sim/, ml/, frontend/,
+backend/requirements-ml.txt (other owners create those).
+
+Steps:
+1. .gitignore, requirements.txt and pytest.ini with the exact content of
+   SPEC Sections 2 and 3.
+2. config.py: every constant of SPEC Section 6, same names and values.
+3. db.py: SPEC Section 7 exactly (all CREATE TABLE statements verbatim,
+   PRAGMAs, and the functions get_conn, init_db, get_db, get_meta,
+   set_meta, now_iso). get_conn(db_path=None) uses db_path or
+   config.DB_PATH and creates the parent folder.
+4. schemas.py (Pydantic v2 request bodies; tau limits via Field(ge, le) so
+   FastAPI returns 422 automatically):
+   ObservationIn {bin_id: str, level: Literal["low","medium","full"] | None
+     = None, fill_pct: float | None = Field(None, ge=0, le=100),
+     source: Literal["staff_tap","camera","simulated"] = "staff_tap"}
+     with a model_validator that requires exactly one of level / fill_pct.
+   DecisionsIn {tau: float = Field(DEFAULT_TAU, ge=TAU_MIN, le=TAU_MAX)}
+   RoutesIn {tau (same field), fleet_sizes: list[int] = [1,2,3] (each
+     1..3, non-empty), fast: bool = False}
+   ChooseIn {fleet_size: int = Field(ge=1, le=3)}
+   PickupIn {route_id: str, bin_id: str, level: Literal[...] | None = None,
+     staff_note: str | None = Field(None, max_length=300)}
+   CompostIn {route_id: str}
+   MessLogIn {mess_id: str, meal: Literal[4 meals], category: Literal[3
+     categories], weight_kg: float = Field(gt=0, le=500), weighed: bool,
+     date: str | None = Field(None, pattern=r"^\d{4}-\d{2}-\d{2}$"),
+     logged_by: str = "mess staff"}
+5. reports/service.py: implement fully now (tiny SQL helpers others need):
+   active_reports_by_bin(conn), mark_in_plan(conn, bin_ids),
+   mark_resolved(conn, bin_id) exactly as SPEC Sections 11 and 15. Set
+   updated_at with now_iso(). Commit inside each function.
+6. Stub service modules with the EXACT signatures of SPEC Section 15:
+   forecast/model.py, selection/select.py, twin/policies.py,
+   pickups/service.py, mess/service.py, dashboard/service.py,
+   scale_lab/run.py. Each function body: raise NotImplementedError(
+   "STUB - owner <P1|P3|P2> implements this"). Exception:
+   classifier/infer.py: classifier_status() returns {"available": False,
+   "model_version": None, "classes": [the 6 classes of SPEC 13],
+   "report": None}; classify_image raises ClassifierUnavailable.
+   Put the line "# STUB created by P2 - owner <X> replaces this file" at
+   the top of every stub.
+7. mock_data.py: a small mock set (6 bins: 2 hostel, 1 mess, 1 mess_food,
+   2 department, positions near CAMPUS_CENTER) and functions that build
+   mock responses with EXACTLY the JSON shapes of SPEC Section 14 for:
+   bins, bin history, observation, forecasts, forecast eval, decisions,
+   routes (two alternatives, one feasible, polylines included), worker
+   routes, reports list, pickup, batches, mess logs, dashboard, twin,
+   scale lab. Every mock response includes "mock": true at top level.
+8. Routers (each an APIRouter; paths WITHOUT the /api prefix; main.py
+   adds prefix="/api"):
+   core.py (P2, real): GET /health; GET /scenario (from meta + config,
+     404 with the exact SPEC message if meta is empty); POST /demo/reset
+     (import app.seed inside the function; on ImportError return 503
+     "Seed not available yet - owner P1"; otherwise call run_seed(seed=42)).
+   data.py, twin.py, pickups.py, mess.py, dashboard.py (stubs): every
+     endpoint of SPEC 14 for that owner, returning mock_data responses.
+     Validate request bodies with schemas.py so request shapes are real.
+     Top line: "# STUB created by P2 - owner <X> replaces the bodies".
+   classify.py (stub): GET /classify/status -> classifier_status();
+     POST /classify accepts multipart photo + optional bin_id and returns
+     503 {"detail": "Classifier model not available"}.
+   routes.py, reports.py (P2, mock for now): all their endpoints from SPEC
+     14 returning mock_data, request validation real.
+   scale.py (P2): GET /scale-lab returns the cache file if it exists else
+     404 "Scale lab not cached - run POST /api/scale-lab/run";
+     POST /scale-lab/run returns 501 "Not built yet" for now.
+   Multipart endpoints use FastAPI Form(...) and UploadFile = File(None).
+9. main.py: app = FastAPI(title="CHAKRA API"); a lifespan handler that
+   creates DATA_DIR, DEMO_CACHE_DIR, UPLOAD_DIR, MODEL_DIR and calls
+   init_db(reset=False); CORSMiddleware allowing http://localhost:5173 and
+   http://127.0.0.1:5173; include every router with prefix="/api".
+10. tests/conftest.py fixtures:
+    db_path: tmp_path / "test.db" after init_db(reset=True, db_path=...)
+    conn: get_conn(db_path), closed after the test
+    client: fastapi.testclient.TestClient(app) with
+      app.dependency_overrides[get_db] yielding connections to db_path
+    seeded_db_path: calls app.seed.run_seed(seed=42,
+      scenario_date=datetime.date(2026, 10, 24), db_path=db_path);
+      if app.seed cannot be imported -> pytest.skip("seed not available yet")
+    seeded_client: like client but on seeded_db_path
+11. tests/test_p2_core.py: /api/health ok; /api/scenario 404 on an empty
+    db; all 14 tables of SPEC 7 exist; every GET endpoint of SPEC 14 returns 200 or
+    the documented 404/503 (no 500).
+12. Create backend/.venv per SPEC Section 4 if it does not exist, install
+    requirements, then run from backend/:
+      .venv\Scripts\python -m pytest -q
+      .venv\Scripts\python -c "from app.main import app; print(sorted(r.path for r in app.routes))"
+    Show both outputs. Every SPEC 14 path must appear in the list; compare
+    them one by one and report any missing or extra path.
+13. Commit exactly the files listed above with message
+    "P2: shared core, schema, contracts and stubs", then git pull --rebase
+    and git push. Show git log -1 --stat.
+----- END -----
+After it is pushed: post in the team chat "Skeleton pushed - pull now".
+
+
+######################################################################
+P2-2 | 09:25-10:00 | Distances, nearest-neighbour baseline, temporary planner
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Goal: P1's digital twin needs a working app.routing.plan.plan_routes()
+early. Build the simple parts now; the three-stage method comes later and
+keeps the same function signatures.
+
+Files you may create or edit: backend/app/routing/types.py, distance.py,
+baseline.py, plan.py, backend/tests/test_p2_routing_basic.py
+
+1. types.py: the Stop and RoutingSettings dataclasses of SPEC 15.
+   RoutingSettings uses field(default_factory=...) for lists and default
+   values from app.config. Add a helper RoutingSettings.vehicles_for(k).
+2. distance.py: haversine_km(lat1, lon1, lat2, lon2) with R = 6371.0;
+   road_km(a, b, detour_factor) for objects or dicts with lat/lon;
+   distance_matrix_m(points, detour_factor) -> list[list[int]] metres.
+3. baseline.py: baseline_nearest_neighbor(stops, fleet_size, settings=None)
+   implementing SPEC Section 10 "Baseline" exactly, including the stream
+   rule (food routes end at COMPOST, k == 1 with both streams leaves every
+   food stop unassigned), effective capacity (capacity_l x
+   capacity_buffer), the shift limit, minutes and cost formulas. Return one
+   alternative dict with the exact keys of SPEC 14 "alternatives[]",
+   including routes[].stops (seq from 1), ordered_bin_ids, polyline
+   (start node, stops, end node as [lat, lon]), solver="nearest_neighbor",
+   and feasible / manual_dispatch_required / unassigned_bin_ids.
+   Empty stops -> feasible alternative with no routes, zero km and cost.
+4. plan.py: plan_routes(stops, fleet_sizes=(1,2,3), fast=False,
+   settings=None) - TEMPORARY version: for each fleet size call
+   baseline_nearest_neighbor and set each route's solver to
+   "temporary_nearest_neighbor". Choose recommended_fleet_size by SPEC 10
+   (lowest cost among feasible, tie -> lower km, None if none feasible).
+   Return {"alternatives": [...], "recommended_fleet_size": ...}.
+   Also re-export baseline_nearest_neighbor from plan.py.
+5. Tests (test_p2_routing_basic.py), using small hand-made stops:
+   - haversine of (0,0)-(1,0) is between 111.1 and 111.3 km
+   - every stop appears exactly once in routes or unassigned_bin_ids
+   - no route load exceeds capacity_l x capacity_buffer
+   - general routes end at DEPOT, food routes end at COMPOST, no mixed route
+   - k=1 with both streams -> food stops unassigned, feasible False
+   - a stop set larger than total capacity -> unassigned not empty
+   - empty stops -> feasible, total_km 0
+6. Run .venv\Scripts\python -m pytest -q from backend/ and show output.
+7. Commit only these files: "P2: distances, NN baseline, temporary planner",
+   pull --rebase, push.
+----- END -----
+Tell P1: "plan_routes() is usable now (temporary NN version)".
+
+
+######################################################################
+P2-3 | 10:00-12:30 | Stage 1 clustering, stage 2 assignment, feasibility gate
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Goal: implement stages 1 and 2 of the AMRUTA-style method and the
+feasibility gate exactly as SPEC Section 10 describes. Stage 3 stays a
+nearest-neighbour ordering inside each cluster for now (OR-Tools comes in
+P2-4).
+
+Files you may create or edit: backend/app/routing/cluster.py, assign.py,
+feasibility.py, plan.py, backend/tests/test_p2_routing_stages.py
+
+1. cluster.py: cluster_stops(stops, n_clusters, capacity_l, detour_factor)
+   -> (clusters: list[list[Stop]], unassigned: list[Stop]).
+   Implement the seeding rule and the iteration rule of SPEC 10 Stage 1
+   literally (max 10 iterations, demand-weighted centroids, order by
+   distance-to-nearest-centroid / demand ascending, capacity check).
+   Deterministic: no randomness; break ties by bin_id.
+   n_clusters >= number of stops -> one stop per cluster.
+2. assign.py: assign_vehicles(clusters, vehicles) per SPEC 10 Stage 2
+   (sort by load desc, one refinement pass, capacity always respected).
+   Returns list of (vehicle dict, list[Stop]).
+3. feasibility.py: order_nearest(start, stops, end, ...) helper,
+   route_metrics(...) -> km, minutes, load_l, est_cost_rs (cost of one
+   route = fixed_cost_rs + km x cost_per_km_rs), and
+   enforce_shift(routes, settings) implementing the SPEC 10 feasibility
+   gate (move the stop with the largest removal saving to another
+   same-stream route with capacity and time, else unassign). Also
+   check_alternative(alternative, selected_bin_ids, settings) -> list of
+   violation strings (empty list = feasible).
+4. plan.py: plan_routes now = for each fleet size: split stops by stream
+   with the SPEC 10 vehicle rule -> stage 1 -> stage 2 -> nearest order in
+   each cluster -> enforce_shift -> check_alternative. Set solver
+   "cluster_nearest_neighbor" for now. Keep signatures and output keys
+   identical to P2-2. baseline_nearest_neighbor is unchanged.
+5. Tests (test_p2_routing_stages.py): SPEC 19 T4 and T6 on (a) 12
+   hand-made stops in two streams, (b) 50 random stops (fixed numpy seed)
+   around CAMPUS_CENTER; capacity overload -> unassigned listed and
+   feasible False; check_alternative returns [] for feasible output;
+   result is identical on two runs (determinism).
+6. Run pytest -q and show output. Also print, for the 50-stop case, total
+   km of plan_routes(recommended) vs baseline_nearest_neighbor at the same
+   fleet size. Report the numbers exactly as printed; do not interpret
+   them as campus savings.
+7. Commit only these files: "P2: stages 1-2 and feasibility gate", pull
+   --rebase, push.
+----- END -----
+
+
+######################################################################
+P2-4 | 12:30-14:00 | Stage 3 OR-Tools, routes API, commit plan, worker routes
+######################################################################
+Before: P1 must have pushed selection (decide) - ask in chat.
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Files you may create or edit: backend/app/routing/order.py, plan.py,
+backend/app/routers/routes.py, backend/tests/test_p2_routes_api.py
+
+1. order.py: order_with_ortools(start_node, stops, end_node,
+   detour_factor, fast) -> (ordered_stops, solver_name).
+   First verify the OR-Tools API on the installed version:
+     .venv\Scripts\python -c "import ortools; print(ortools.__version__); from ortools.constraint_solver import pywrapcp, routing_enums_pb2; print('ok')"
+   If that import fails, STOP and show me the error and the version
+   (do not guess another API). Use exactly the calls listed in SPEC 10
+   Stage 3: RoutingIndexManager(n, 1, [start], [end]), a transit callback
+   on integer metres, SetArcCostEvaluatorOfAllVehicles,
+   PATH_CHEAPEST_ARC, and for fast=False GUIDED_LOCAL_SEARCH with
+   time_limit seconds = ORTOOLS_TIME_LIMIT_S. Clusters with 0 or 1 stop
+   skip the solver. On any exception or no solution: nearest-neighbour
+   order and solver "fallback_nearest_neighbor".
+2. plan.py: use order_with_ortools in stage 3 (solver "ortools" or
+   "ortools_fast"), then enforce_shift and check_alternative as before.
+3. routers/routes.py - replace the mock bodies with real ones (SPEC 14):
+   POST /routes: body RoutesIn -> call app.selection.select.decide(conn,
+     tau) -> Stop list from selected decisions (demand_l from the
+     decision) -> plan_routes(stops, fleet_sizes, fast) -> baseline at the
+     recommended fleet size (or 2 if None) -> savings_vs_baseline (km,
+     km_pct = km saved / baseline km x 100 rounded to 1 decimal, cost_rs;
+     null if no recommended alternative or baseline km is 0) ->
+     store plans row (status 'draft', response_json = the full response
+     including the decisions list under key "decisions") -> return it
+     (you may omit the "decisions" list from the HTTP response; keep
+     decisions_summary).
+   GET /routes/{plan_id}: stored response (404 if unknown).
+   POST /routes/{plan_id}/choose: SPEC 14 exactly, all writes in one
+     transaction: 409 for infeasible; supersede older committed plans of
+     the same plan_date; insert route_plans; insert pickup_decisions from
+     the stored decisions; call app.reports.service.mark_in_plan for
+     selected bins whose reason_code is 'reported'; set status
+     'committed' and chosen_fleet_size.
+   GET /worker/routes: latest committed plan; per route, stop done =
+     a pickup_events row exists for (route_id, bin_id); compost_delivered
+     = food route whose batches are all delivered_to_compost.
+     404 message exactly as SPEC 14.
+4. If app.selection.select.decide still raises NotImplementedError, STOP
+   and tell me to wait for P1. Do not write your own selection.
+5. Tests (test_p2_routes_api.py) using the seeded_client fixture:
+   POST /api/routes returns >= 1 alternative with the SPEC keys; every
+   selected_bin_id is in exactly one route or unassigned (T4); baseline
+   has the same fleet size and stop set (T5); choose on an infeasible
+   alternative -> 409 (T7; build one by posting fleet_sizes [1] if it is
+   infeasible in the seed, otherwise test check logic directly);
+   choose feasible -> worker/routes lists its stops with done false.
+6. Run pytest -q (all tests, not only yours) and show output.
+7. Commit only these files: "P2: OR-Tools stage 3 and routes API", pull
+   --rebase, push.
+----- END -----
+
+
+######################################################################
+P2-5 | 14:00-15:00 | INTEGRATION CHECKPOINT (you lead; all three attend)
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Task: check that the Must tier works end to end. You may edit ONLY P2's
+own files. For problems in other owners' files, list them; do not fix them.
+
+1. Backend (in backend/):
+   .venv\Scripts\python -m app.seed
+   .venv\Scripts\python -m pytest -q
+2. With FastAPI TestClient against the real database, call in order and
+   report status code + 1-line summary for each:
+   GET /api/scenario, GET /api/bins, POST /api/forecasts, POST
+   /api/decisions {"tau":0.5}, POST /api/decisions {"tau":0.2},
+   POST /api/routes {"tau":0.5}, POST /api/routes/{id}/choose (recommended
+   fleet size), GET /api/worker/routes, POST /api/pickups for the first
+   stop, GET /api/dashboard, GET /api/twin.
+   Flag any response that still contains "mock": true (that owner has
+   not replaced the stub yet).
+3. Frontend (in frontend/): npm install, npm run build. Show the result.
+4. Output a table: step, status, owner, problem (if any). Then a short list
+   "Must tier blockers" with the owner of each. Do not commit anything
+   unless you changed a P2 file to fix a P2 bug (then commit only that).
+----- END -----
+Rule from the plan: add-ons start only after the Must tier works.
+
+
+######################################################################
+P2-6 | 15:00-15:40 | Reports backend: merge, missed collection, reject (M10)
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Files you may create or edit: backend/app/reports/service.py,
+backend/app/routers/reports.py, backend/tests/test_p2_reports.py
+
+1. service.py: add create_report(conn, bin_id, kind, reporter_role,
+   photo_path) implementing SPEC 11 exactly: verified rule, merge with an
+   active report (open or in_plan), missed-collection rule against the
+   latest committed plan (set missed=1 only once), return
+   {"report", "merged", "missed_collection"}. Add reject_report(conn,
+   report_id) (409 case = only from open) and list_reports(conn, status)
+   joining bins.name as bin_name. Keep the existing three helpers unchanged.
+2. routers/reports.py: replace the mocks.
+   POST /reports: Form fields bin_id, kind, reporter_role; optional
+   UploadFile photo. 404 unknown bin; 422 bad kind/role. Photo: accept
+   only content types image/jpeg and image/png, max MAX_UPLOAD_MB; save
+   to UPLOAD_DIR/reports/<uuid4 hex>.jpg|.png; store the relative path.
+   GET /reports?status=... (default open; "all" = every status).
+   POST /reports/{report_id}/reject.
+3. Tests (SPEC 19 T8) with seeded_client: commit a plan first (POST
+   /api/routes then choose recommended), pick a bin with reason_code
+   below_tau, report it -> missed_collection true; report again -> merged
+   true, report_count 2, still one active report, missed stays 1;
+   POST /api/decisions now gives that bin reason_code 'reported';
+   reject on another bin's open report -> status rejected and decide()
+   no longer forces it; reject twice -> 409; photo upload with a tiny PNG
+   works; a text file as photo -> 400 or 422.
+4. Run pytest -q and show output.
+5. Commit only these files: "P2: overflow and missed-collection reports",
+   pull --rebase, push.
+----- END -----
+
+
+######################################################################
+P2-7 | 15:40-16:15 | Report pages: QR phone page, worker button, queue, QR sheet
+######################################################################
+Before: P3 must have pushed the frontend scaffold (P3-1).
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Files you may edit (they already exist as stubs from P3):
+frontend/src/pages/BinReport.jsx, frontend/src/pages/ReportsQueue.jsx,
+frontend/src/pages/QrSheet.jsx, frontend/src/components/ReportOverflowButton.jsx
+Use only functions from src/api.js and components from src/ui (SPEC 16).
+Do not edit api.js, App.jsx, styles or ui files. If you need something
+there, STOP and tell me what to ask P3 or P4.
+
+1. BinReport.jsx (route /bin/:binId/report, phone-first, no Layout):
+   loads getBins() and shows the bin name and group; two large buttons
+   "This bin is overflowing" (kind overflow) and "Pickup was missed"
+   (kind missed_collection); optional photo input
+   (accept="image/*" capture="environment"); submit with FormData
+   (bin_id, kind, reporter_role "qr", photo if chosen) via postReport.
+   Success view: "Thanks - this bin will be added to the next plan." plus
+   "(merged with an earlier report)" when merged is true. Unknown bin ->
+   friendly error. Disable buttons while sending.
+2. ReportOverflowButton.jsx: props {binId, binName, onReported}; a Button
+   (variant "danger", size "sm") "Report overflow" that opens a small
+   inline confirm with optional photo, sends kind overflow, reporter_role
+   "staff", then calls onReported(result). Show errors with Notice.
+3. ReportsQueue.jsx (/reports): PageHeader "Reports" with badges
+   implemented; tabs or a select for status (open, in_plan, resolved,
+   rejected, all); DataTable columns: bin, kind, role, verified
+   ("unverified" for qr), count, status, reported_at, action (Reject
+   button only for open). Refresh after reject.
+4. QrSheet.jsx (/qr): for every bin from getBins(), a card with the bin
+   name and a QRCodeSVG (import { QRCodeSVG } from "qrcode.react") whose
+   value is `${window.location.origin}/bin/${bin_id}/report`; a print
+   stylesheet in the same file (or a <style> tag) so cards print 3 per row.
+   Note on the page: "Phones must reach this laptop: run npm run dev --
+   --host and use the laptop's Wi-Fi address."
+5. Run npm run build in frontend/ and show the result (must have no errors).
+6. Commit only these 4 files: "P2: report pages and QR sheet", pull
+   --rebase, push.
+Then tell me what to check by hand in the browser (one line per page).
+----- END -----
+
+
+######################################################################
+P2-8 | 16:15-16:30 | Scale lab (STRETCH - only if everything above works)
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Files you may create or edit: backend/app/scale_lab/run.py,
+backend/app/routers/scale.py, frontend/src/pages/ScaleLab.jsx,
+backend/tests/test_p2_scale.py
+
+1. run.py: run_scale_lab() builds two instances and times
+   plan_routes(fast=True) vs baseline_nearest_neighbor with
+   time.perf_counter():
+   campus = all 50 bins of the seeded database as stops (demand =
+     capacity x max(latest fill, 10%) / 100), fleet size 2, default settings;
+   city = 2,000 synthetic general stops, numpy default_rng(7), positions
+     uniform in CAMPUS_CENTER +/- 0.045 lat/lon (about 10 x 10 km),
+     capacity 240 L, demand uniform 20-90% of capacity; 30 vehicles of
+     10,000 L, fixed cost 800, 12 per km; settings speed 25 km/h, service
+     1.5 min per bin, shift 600 min; fleet_sizes (30,).
+   Save the SPEC 14 shape to DEMO_CACHE_DIR/scale_lab.json and return it.
+   load_scale_cache() reads it or returns None.
+   If the city instance takes more than 5 minutes, STOP and tell me.
+2. scale.py: GET returns the cache (404 message as in P2-1); POST runs it.
+3. ScaleLab.jsx: PageHeader "Scale lab" badges ["simulated"]; a table and
+   a bar chart (Recharts, chartTheme colors) of km and runtime for both
+   methods per instance; a "Run again" Button calling runScaleLab with a
+   Loading state; note "Straight-line distance x detour factor; synthetic
+   city instance."
+4. Test: run_scale_lab on a reduced city size via a parameter (e.g. 200
+   stops) finishes and has both instances. Run pytest -q and npm run build.
+5. Commit only these files: "P2: scale lab", pull --rebase, push.
+----- END -----
+
+
+######################################################################
+P2-9 | 16:30-17:00 | FEATURE FREEZE: demo caches and final checks
+######################################################################
+----- COPY BELOW -----
+You are helping P2 build CHAKRA. First read SPEC.txt in the repository
+root completely and follow every rule in Section 0. Run git pull --rebase.
+
+Task: prepare the demo. Do not add features.
+1. In backend/: .venv\Scripts\python -m app.seed --with-twin --with-scale
+   (if --with-scale fails because the scale lab was cut, run without it).
+2. .venv\Scripts\python -m pytest -q  - show the full summary line.
+3. Confirm these files exist and are valid JSON, and print their size and
+   top-level keys: backend/data/demo_cache/twin.json, scale_lab.json (if
+   built), demo_bins.json (from P1).
+4. In frontend/: npm run build - show the result.
+5. Print a demo-day run sheet (plain text) with the exact commands to start
+   the backend and the frontend, the URL of each page, and the
+   POST /api/demo/reset step to run before presenting.
+6. Commit only backend/data/demo_cache/*.json with message
+   "P2: demo caches", pull --rebase, push.
+----- END -----
+Human: record the backup screen video now (P3 narrates), then rehearse.

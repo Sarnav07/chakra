@@ -1,0 +1,227 @@
+=====================================================================
+P4 PROMPTS - UI / UX polish (floating role)
+Whoever finishes their own prompts first takes the next P4 prompt.
+=====================================================================
+Rules for P4 (read before claiming)
+- Claim a prompt in the team chat first: "P4-2 claimed by P1". One person
+  per P4 prompt at a time. Never run two P4 prompts in parallel.
+- P4 owns ONLY frontend/src/styles/* and frontend/src/ui/* (after P3-1
+  created them). Page files belong to P1/P2/P3 - P4-6 is the only prompt
+  that touches pages, and only with the page owner's "OK" in chat.
+- Never change component names, props, exports or CSS variable names
+  (SPEC 16.4 and 16.5). Other people's pages depend on them. Adding a new
+  OPTIONAL prop is allowed.
+- Never change text claims, numbers or honesty badges. Styling only.
+- Every P4 prompt ends with npm run build passing and a commit whose
+  message starts "P4(<your P number>):".
+- Best order: P4-1 -> P4-2 -> P4-3 -> P4-4 -> P4-5 -> P4-6.
+  P4-1 and P4-2 give the biggest visual gain for the least time.
+How to use: open Claude Code in chakra/, NEW session per prompt, copy
+everything between the COPY lines.
+---------------------------------------------------------------------
+
+
+######################################################################
+P4-1 | ~20 min | Design tokens and base styles
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+Files you may edit: frontend/src/styles/tokens.css,
+frontend/src/styles/base.css. Nothing else.
+
+Goal: one calm, professional visual system that matches the plan PDF
+(deep green primary #1E6B47, clean white surfaces, the badge and owner
+colours of SPEC 16.5). Keep every variable name of SPEC 16.5; you may add
+new variables but not remove or rename any.
+1. Read every file in frontend/src/ui and frontend/src/pages first so you
+   know which variables are used. List any variable that is used but not
+   defined, and define it.
+2. tokens.css: refine values - an 8px spacing scale, radius 8px, a subtle
+   shadow, a neutral grey scale for text/muted/border, font stacks
+   (system UI sans; monospace for numbers is optional), and the risk
+   colours (keep low = green, mid = amber, high = red; overflow darker
+   red; review grey; reported purple).
+3. Contrast: write a tiny Node script in a temp folder OUTSIDE the repo
+   that computes the WCAG contrast ratio of: text on bg, text on surface,
+   muted on surface, primary-contrast on primary, white on each badge
+   colour, white on each owner colour. Print the table. Any pair below
+   4.5:1 must be fixed by darkening the colour; print the table again.
+   Delete the script afterwards.
+4. base.css: typography scale (h1 28px, h2 20px, h3 16px, body 15px, line
+   height 1.5), tabular numbers for .num, focus-visible outline using
+   primary, link colours, page container, and no horizontal scroll at
+   375px width. Respect prefers-reduced-motion.
+5. npm run build (no errors). Commit only the two files:
+   "P4(Px): design tokens and base styles", pull --rebase, push.
+Report the final contrast table.
+----- END -----
+
+
+######################################################################
+P4-2 | ~30 min | UI kit components
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+Files you may edit: everything in frontend/src/ui/ (and a ui.css there if
+the kit uses one). Do not edit pages, api.js, App.jsx or styles/.
+
+Goal: make every component in SPEC 16.4 look finished while keeping
+exactly the same names, props and exports.
+1. First, grep every page and component for how each ui component is used
+   (props passed). Print a table component -> props used. Any prop used
+   that the component does not support: report it (do not remove usages).
+2. Restyle using only CSS variables:
+   Button - clear primary/secondary/danger/ghost styles, hover, active,
+     disabled, focus-visible, min height 40px (44px on touch screens).
+   Card - surface, border, radius, shadow, title row with actions on the
+     right.
+   Badge - pill shape, uppercase, small letter-spacing, the four badge
+     colours, white text.
+   StatusPill - coloured dot + text for each status (never colour alone).
+   Slider - visible track and thumb, value shown next to the label,
+     the hint below, keyboard accessible (it is an <input type="range">).
+   Stat - label small/muted, value large with tabular numbers, unit, hint.
+   DataTable - zebra rows, sticky header, horizontal scroll inside the
+     table container only on small screens, emptyText state.
+   PageHeader - title, subtitle, badges row; wraps on phones.
+   Notice - info/success/error with an icon character and role="status"
+     (role="alert" for error).
+   Loading - spinner (CSS only) + text, aria-live="polite".
+   EmptyState - centred, muted.
+3. Do not change any visible wording that pages pass in.
+4. npm run build (no errors). Commit only files in src/ui:
+   "P4(Px): ui kit polish", pull --rebase, push.
+Then list 5 things to check by eye in the browser.
+----- END -----
+
+
+######################################################################
+P4-3 | ~20 min | App shell, navigation, phone layouts
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+Files you may edit: frontend/src/ui/Layout.jsx (and ui.css if used),
+frontend/src/styles/base.css.
+1. Layout: sticky top bar with "CHAKRA" wordmark; the 9 nav links of SPEC
+   16.1 with a clear active state; under 768px width the links collapse
+   into a "Menu" button that opens a vertical list (button has
+   aria-expanded and aria-controls; Escape closes it; choosing a link
+   closes it). Keep the "Reset demo" button and its confirm behaviour
+   exactly. Keep the SIMULATED notice, styled as a slim banner using the
+   simulated badge colour at low opacity with readable text.
+2. Main content uses the .page container; the Worker page must be
+   comfortable at 375px (large tap targets come from Button already).
+3. Add a skip link "Skip to content" for keyboard users.
+4. npm run build (no errors). Commit only the edited files:
+   "P4(Px): app shell and responsive nav", pull --rebase, push.
+Then tell me how to test at 375px in the browser dev tools.
+----- END -----
+
+
+######################################################################
+P4-4 | ~20 min | Map legend, risk colours, chart theme
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+Files you may edit: frontend/src/ui/MapLegend.jsx, frontend/src/ui/colors.js,
+frontend/src/ui/chartTheme.js, frontend/src/styles/tokens.css.
+Keep riskColor's rules from SPEC 16.4 exactly (same thresholds, same
+reason_code mapping); you may only change the colour values.
+1. MapLegend: compact card that sits over or beside the map, each item a
+   swatch + label; supports an optional "dashed" flag per item (render the
+   swatch with a dashed border) so "needs review" can be shown as dashed.
+   Collapsible on phones.
+2. colors.js: make cssVar() return a fallback hex if the variable is empty
+   (e.g. during tests); keep riskColor's signature.
+3. chartTheme.js: keep the CHART export and its keys (series, grid,
+   fontSize); choose 6 series colours that stay distinguishable for
+   red-green colour-blind viewers (for example a blue/orange/purple/teal
+   based set) and check each against white for at least 3:1 contrast
+   (compute it; print the table). Add optional keys (axis, tooltipBg)
+   only if no existing chart breaks.
+4. Check that the risk colours (low/mid/high) differ in lightness as well
+   as hue, so they remain readable in greyscale; print their relative
+   luminance values.
+5. npm run build (no errors). Commit only the edited files:
+   "P4(Px): map legend, risk colours, chart theme", pull --rebase, push.
+----- END -----
+
+
+######################################################################
+P4-5 | ~15 min | Accessibility and states pass
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+Files you may edit: frontend/src/ui/* and frontend/src/styles/* only.
+1. Audit (read-only) every page in frontend/src/pages and list, per page:
+   images or icons without text alternatives, buttons without accessible
+   names, inputs without labels, information shown by colour only,
+   missing loading/empty/error states. Output the list grouped by page
+   owner (P1/P2/P3) so they can fix their own pages; do not edit pages.
+2. Fix what lives in the ui kit: every interactive ui component has a
+   visible focus style and an accessible name; Slider has an associated
+   <label>; DataTable uses <th scope="col">; Notice roles as in P4-2;
+   colour is never the only signal in StatusPill and Badge.
+3. npm run build (no errors). Commit only ui/styles files:
+   "P4(Px): accessibility pass", pull --rebase, push.
+Post the page-owner list in the team chat.
+----- END -----
+
+
+######################################################################
+P4-6 | ~10 min per page | Page polish (ONLY with the owner's OK)
+######################################################################
+Before each run: ask the page owner in chat "OK to polish <Page>.jsx?"
+and wait for "OK". One page per run. The owner must not edit that page
+until you push.
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Run git pull --rebase.
+
+File you may edit: frontend/src/pages/<PAGE NAME>.jsx  (the page owner
+said OK in chat). Replace <PAGE NAME> before sending.
+Polish layout and spacing ONLY:
+- group related controls into Cards, align Stats in a responsive grid
+  (auto-fit, min 160px), consistent spacing with the --space-* variables,
+  readable at 375px and 1366px widths.
+- do NOT change: any API call, state logic, handler, text wording,
+  number formatting, badge, caption, or component props.
+- if a change would need logic edits, list it for the owner instead.
+Show a short diff summary (what moved where). Run npm run build (no
+errors). Commit only that page: "P4(Px): polish <PAGE NAME>", pull
+--rebase, push. Tell the owner in chat that the page is free again.
+----- END -----
+
+
+######################################################################
+P4-7 | 10 min | Visual QA before the freeze (no code)
+######################################################################
+----- COPY BELOW -----
+You are helping with the P4 (UI/UX) role on CHAKRA. First read SPEC.txt
+in the repository root completely and follow every rule in Section 0.
+Do not edit any file.
+Write a visual QA checklist I can run by hand in 10 minutes, page by page
+(all routes of SPEC 16.1), at two widths: 1366x768 (projector) and 375px
+(phone). For each page: what must be visible above the fold, which badge
+must show, what to click, what a correct result looks like, and the most
+likely visual bug to look for (map without height, chart without height,
+text overflowing cards, buttons too small on phone). End with the
+demo-day browser setup: zoom level, tabs to pre-open in order, and
+turning off notifications.
+----- END -----

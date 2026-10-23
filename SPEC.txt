@@ -1,0 +1,1043 @@
+=====================================================================
+CHAKRA - SHARED BUILD SPEC (version 2)
+Single source of truth for every prompt. Put this file in the repo root.
+=====================================================================
+
+Section index
+  0  Rules for the AI assistant (read first, every session)
+  1  What we are building
+  2  Tech stack and exact versions
+  3  Repository layout and file ownership
+  4  Setup and run commands
+  5  Time, dates and the scenario clock
+  6  Configuration constants (backend/app/config.py)
+  7  Database schema (SQLite)
+  8  Synthetic scenario and simulator rules
+  9  Forecast, P(overflow) and selection rules
+  10 Routing rules (three-stage, baseline, feasibility)
+  11 Reports, pickups, batches, mess logs
+  12 Digital twin rules
+  13 Item classifier rules
+  14 HTTP API contract (all endpoints)
+  15 Python interfaces between modules
+  16 Frontend contract (routes, api.js, UI kit, tokens)
+  17 Honesty labels
+  18 Git workflow
+  19 Acceptance tests (definition of done)
+  Appendix A  Cost estimate figures (for the slide)
+
+---------------------------------------------------------------------
+0. RULES FOR THE AI ASSISTANT
+---------------------------------------------------------------------
+R1  This SPEC is the source of truth. Names, paths, field names, endpoint
+    paths, JSON keys and numbers in it are exact. Do not rename anything.
+R2  Edit ONLY the files your prompt lists, which are owned by the person
+    named in the prompt (Section 3). If a change is needed in a file you
+    do not own, STOP and tell the human which owner must change what.
+R3  If information you need is missing, ambiguous or contradictory, STOP
+    and ask the human. Do not guess. Do not invent library APIs, data,
+    numbers, prices, accuracy figures or features.
+R4  Never hard-code results (accuracy, savings, km, costs, counts) into
+    code or UI text. Results must be computed at run time, or come from
+    Appendix A (cost slide only).
+R5  Use only the libraries in Section 2. Do not add a dependency without
+    asking the human first.
+R6  If you are unsure how a library function works, check the installed
+    version (python -c "import x; print(x.__version__)") and inspect it
+    (help(), dir(), or a 3-line test snippet) BEFORE relying on it.
+R7  JSON responses: convert numpy/pandas types to plain Python types; never
+    return NaN or Infinity (use null); dates and times as ISO 8601 strings.
+R8  Before you say a task is done: run every check the prompt lists, show
+    the real output, and state clearly what works and what does not.
+    Never claim something works without running it.
+R9  Commit only your own files (Section 18). If git reports a conflict,
+    STOP and show it to the human; do not resolve it by deleting others'
+    work.
+R10 Keep code simple and readable. Short docstrings. No extra features
+    beyond the prompt. All scenario data is synthetic and must be labeled.
+R11 Commands must work on Windows PowerShell. Prefer "python -m ..." and
+    Python scripts over shell tricks. Never use "&&" in PowerShell 5.
+
+---------------------------------------------------------------------
+1. WHAT WE ARE BUILDING
+---------------------------------------------------------------------
+CHAKRA is a web app for predictive waste collection on a campus.
+Every evening it forecasts each bin's chance of overflowing by the end of
+tomorrow, selects only the bins that need a visit (plus reported, already
+overflowing, and no-fresh-reading bins), plans capacity-safe vehicle
+routes with a three-stage method (cluster -> assign vehicles -> order
+stops with OR-Tools), lets workers confirm pickups on a phone, and proves
+the trade-off on a 30-day digital-twin simulation.
+Version 2 add-ons: M9 item classifier (one photo of one item), M10
+overflow / missed-collection reports, M11 mess food-waste log with food
+routes ending at a compost stop, and a cost estimate slide.
+NOT in scope: hostel comparison view, segregation score, recycler handoff,
+zone heatmap, marketplace, cameras, any LLM API, user accounts/login.
+
+Modules: M0 Shared core (P2), M1 Simulator (P1), M2 Forecast (P1),
+M3 Selection (P1), M4 Routing (P2), M5 Twin (P1), M6 Interfaces (P3),
+M7 Handoff + badges (P3), M8 Scale lab (P2, stretch), M9 Classifier (P1),
+M10 Reports (P2), M11 Mess log + compost (P3, stretch).
+P4 = UI/UX polish, done by whoever is free (Section 16.5).
+
+---------------------------------------------------------------------
+2. TECH STACK AND EXACT VERSIONS
+---------------------------------------------------------------------
+Python 3.12 (required). Python 3.13+ may lack OR-Tools / PyTorch wheels.
+Backend: FastAPI + Uvicorn, SQLite via the Python standard library
+"sqlite3" (no ORM), Pydantic v2 for request bodies only.
+
+backend/requirements.txt (exact content):
+  fastapi>=0.110,<1.0
+  uvicorn[standard]>=0.29
+  pydantic>=2.6,<3
+  numpy>=1.26,<3
+  pandas>=2.1,<3
+  scikit-learn>=1.4,<2
+  ortools>=9.10,<10
+  python-multipart>=0.0.9
+  httpx>=0.27
+  pytest>=8
+  pillow>=10
+
+backend/requirements-ml.txt (optional, only for the classifier endpoint):
+  torch
+  torchvision
+  (install CPU builds:  python -m pip install -r requirements-ml.txt
+   --index-url https://download.pytorch.org/whl/cpu )
+
+Frontend: Node 18 or newer, Vite 5, React 18, plain JavaScript (.jsx),
+plain CSS with CSS variables (no Tailwind, no UI framework, no TypeScript).
+frontend/package.json dependencies (exact):
+  "react": "18.3.1",
+  "react-dom": "18.3.1",
+  "react-router-dom": "^6.26.0",
+  "leaflet": "1.9.4",
+  "react-leaflet": "4.2.1",
+  "recharts": "^2.12.0",
+  "qrcode.react": "^3.1.0"
+devDependencies (exact):
+  "vite": "^5.4.0",
+  "@vitejs/plugin-react": "^4.3.0"
+Scripts: "dev": "vite", "build": "vite build", "preview": "vite preview".
+
+ML training (run on a Kaggle or Colab GPU notebook, not on the laptop):
+PyTorch + torchvision (preinstalled there), scikit-learn, Pillow.
+Model: torchvision mobilenet_v3_small with ImageNet weights.
+
+---------------------------------------------------------------------
+3. REPOSITORY LAYOUT AND FILE OWNERSHIP
+---------------------------------------------------------------------
+Repo name: chakra. Branch: main. One owner per file.
+"stub by X" = X creates a placeholder early; the owner then replaces it.
+
+chakra/
+  SPEC.txt ................................. shared (changed only by group
+                                             agreement; P2 commits)
+  .gitignore ............................... P2
+  backend/
+    requirements.txt ....................... P2
+    requirements-ml.txt .................... P1
+    pytest.ini ............................. P2   (content: [pytest]
+                                                    pythonpath = .
+                                                    testpaths = tests)
+    app/__init__.py ........................ P2
+    app/main.py ............................ P2
+    app/config.py .......................... P2
+    app/db.py .............................. P2
+    app/schemas.py ......................... P2   (Pydantic request bodies)
+    app/mock_data.py ....................... P2   (temporary mocks)
+    app/seed.py ............................ P1
+    app/sim/__init__.py, scenario.py,
+            simulator.py ................... P1
+    app/forecast/__init__.py, model.py ..... P1   (stub by P2)
+    app/selection/__init__.py, select.py ... P1   (stub by P2)
+    app/twin/__init__.py, policies.py ...... P1   (stub by P2)
+    app/classifier/__init__.py, infer.py ... P1   (stub by P2)
+    app/routing/__init__.py, types.py,
+      distance.py, cluster.py, assign.py,
+      order.py, baseline.py,
+      feasibility.py, plan.py .............. P2
+    app/reports/__init__.py, service.py .... P2
+    app/scale_lab/__init__.py, run.py ...... P2
+    app/pickups/__init__.py, service.py .... P3   (stub by P2)
+    app/mess/__init__.py, service.py ....... P3   (stub by P2)
+    app/dashboard/__init__.py, service.py .. P3   (stub by P2)
+    app/routers/__init__.py ................ P2
+    app/routers/core.py .................... P2   health, scenario, demo
+    app/routers/data.py .................... P1   bins, observations,
+                                                  forecasts, decisions
+                                                  (stub by P2)
+    app/routers/twin.py .................... P1   (stub by P2)
+    app/routers/classify.py ................ P1   (stub by P2)
+    app/routers/routes.py .................. P2   routes, choose, worker
+    app/routers/reports.py ................. P2
+    app/routers/scale.py ................... P2
+    app/routers/pickups.py ................. P3   pickups, compost, batches
+                                                  (stub by P2)
+    app/routers/mess.py .................... P3   (stub by P2)
+    app/routers/dashboard.py ............... P3   (stub by P2)
+    tests/conftest.py ...................... P2
+    tests/test_p1_*.py ..................... P1
+    tests/test_p2_*.py ..................... P2
+    tests/test_p3_*.py ..................... P3
+    data/ .................................. generated, git-ignored
+      chakra.db, uploads/, model/, real_bins.csv  (ignored)
+      demo_cache/*.json  (COMMITTED, so everyone has demo results)
+  ml/
+    prepare_dataset.py, train_classifier.py,
+    eval_classifier.py, RUN_ON_KAGGLE.txt .. P1
+  frontend/
+    package.json, vite.config.js,
+    index.html, src/main.jsx ............... P3
+    src/App.jsx, src/api.js ................ P3   (others ask P3 to change)
+    src/styles/tokens.css, base.css ........ created by P3, then owned by P4
+    src/ui/* ............................... created by P3, then owned by P4
+    src/pages/RiskMap.jsx, PlanTomorrow.jsx,
+      Worker.jsx, TwinLab.jsx,
+      Dashboard.jsx, MessLog.jsx ........... P3
+    src/pages/CheckItem.jsx ................ P1   (stub by P3)
+    src/pages/BinReport.jsx, ReportsQueue.jsx,
+      QrSheet.jsx, ScaleLab.jsx ............ P2   (stub by P3)
+    src/components/ReportOverflowButton.jsx  P2   (stub by P3)
+    src/components/* (all others) .......... P3
+
+.gitignore must contain:
+  backend/.venv/   __pycache__/   *.pyc   .pytest_cache/
+  backend/data/*.db   backend/data/*.db-*   backend/data/*.pkl
+  backend/data/uploads/   backend/data/model/   backend/data/real_bins.csv
+  frontend/node_modules/   frontend/dist/   .DS_Store
+(Do NOT ignore backend/data/demo_cache/.)
+
+---------------------------------------------------------------------
+4. SETUP AND RUN COMMANDS
+---------------------------------------------------------------------
+Python 3.12 virtual environment (choose ONE way):
+  Way A (uv, recommended if Python 3.12 is not installed):
+    python -m pip install uv
+    cd backend
+    python -m uv venv --seed --python 3.12 .venv
+    .venv\Scripts\python -m pip install -r requirements.txt
+    (--seed puts pip inside the venv; uv downloads Python 3.12 itself)
+  Way B (Python 3.12 already installed from python.org):
+    cd backend
+    <path-to-python3.12> -m venv .venv
+    .venv\Scripts\python -m pip install -r requirements.txt
+  Check:  .venv\Scripts\python --version   ->  must print 3.12.x
+  (macOS/Linux: use .venv/bin/python instead of .venv\Scripts\python)
+  Do not "activate" the venv on Windows; always call .venv\Scripts\python
+  directly (avoids the PowerShell execution-policy error).
+
+Backend (run inside backend/):
+  .venv\Scripts\python -m app.seed                 build the demo database
+  .venv\Scripts\python -m app.seed --with-twin --with-scale
+                                                   also rebuild demo caches
+  .venv\Scripts\python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+  .venv\Scripts\python -m pytest -q                run all tests
+Frontend (run inside frontend/):
+  npm install
+  npm run dev            -> http://localhost:5173
+  npm run dev -- --host  -> also reachable from a phone on the same Wi-Fi
+  npm run build          -> must finish with no errors
+Vite proxies /api to http://127.0.0.1:8000 (use 127.0.0.1, not localhost).
+
+---------------------------------------------------------------------
+5. TIME, DATES AND THE SCENARIO CLOCK
+---------------------------------------------------------------------
+- Timezone: fixed offset UTC+05:30 via
+  datetime.timezone(datetime.timedelta(hours=5, minutes=30)).
+  Do NOT use zoneinfo (Windows lacks tz data without extra packages).
+- All stored timestamps: ISO 8601 with offset, e.g. 2026-10-24T20:00:00+05:30
+  Dates: YYYY-MM-DD.
+- The seed writes these keys to table meta:
+    scenario_date = the local date the seed was run (or --date)
+    plan_date     = scenario_date + 1 day   ("tomorrow" in the app)
+    scenario_now  = scenario_date at 20:30:00+05:30
+    seed, created_at, data_label = "simulated"
+- Live events (staff taps, reports, pickups, mess logs, item checks) are
+  timestamped with the real current time in UTC+05:30.
+- "Latest observation" of a bin = the row with the highest obs_id for that
+  bin (NOT the latest timestamp).
+- A bin is STALE if it has no observation, or its latest observation's
+  observed_at is earlier than (scenario_now - 36 hours).
+- The forecast horizon is the end of plan_date (23:59:59+05:30).
+
+---------------------------------------------------------------------
+6. CONFIGURATION CONSTANTS  (backend/app/config.py, owner P2)
+---------------------------------------------------------------------
+All values below are SYNTHETIC ASSUMPTIONS for the prototype.
+  TZ = timezone(timedelta(hours=5, minutes=30))
+  TZ_LABEL = "UTC+05:30 (IST)"
+  BACKEND_DIR = Path(__file__).resolve().parent.parent
+  DATA_DIR = BACKEND_DIR / "data"
+  DB_PATH = Path(os.environ.get("CHAKRA_DB_PATH", DATA_DIR / "chakra.db"))
+  DEMO_CACHE_DIR = DATA_DIR / "demo_cache"
+  UPLOAD_DIR = DATA_DIR / "uploads"
+  MODEL_DIR = DATA_DIR / "model"
+  SEED = 42
+  CAMPUS_CENTER = (29.8650, 77.8960)   # approximate; synthetic layout
+  NODES = [
+    {"node_id": "DEPOT",   "name": "Depot (synthetic)",        "kind": "depot",
+     "lat": 29.8628, "lon": 77.8935},
+    {"node_id": "COMPOST", "name": "Compost stop (synthetic)", "kind": "compost",
+     "lat": 29.8672, "lon": 77.8990}]
+  VEHICLES = [
+    {"vehicle_id": "V1", "capacity_l": 4000, "fixed_cost_rs": 800, "cost_per_km_rs": 12},
+    {"vehicle_id": "V2", "capacity_l": 4000, "fixed_cost_rs": 800, "cost_per_km_rs": 12},
+    {"vehicle_id": "V3", "capacity_l": 4000, "fixed_cost_rs": 800, "cost_per_km_rs": 12}]
+  FLEET_SIZES = (1, 2, 3)
+  DETOUR_FACTOR = 1.3          # road km = straight-line km x 1.3
+  SPEED_KMPH = 15
+  SERVICE_MIN_PER_BIN = 3
+  SHIFT_MIN = 300
+  CAPACITY_BUFFER = 0.9        # plan loads up to 90% of vehicle capacity
+  LEVEL_PCT = {"low": 25, "medium": 60, "full": 90}
+  OVERFLOW_PCT = 100
+  STALE_HOURS = 36
+  DEFAULT_TAU = 0.5
+  TAU_MIN = 0.05
+  TAU_MAX = 0.95
+  MIN_DEMAND_PCT = 10          # selected bins carry at least 10% of capacity
+  STALE_DEMAND_PCT = 50        # assumed demand for a bin with no reading
+  FOOD_DENSITY_KG_PER_L = 0.6
+  CLASSIFIER_CONFIDENCE_MIN = 0.6
+  MAX_UPLOAD_MB = 8
+  ORTOOLS_TIME_LIMIT_S = 1     # per cluster, interactive mode only
+
+---------------------------------------------------------------------
+7. DATABASE SCHEMA  (backend/app/db.py creates it exactly; owner P2)
+---------------------------------------------------------------------
+Connection: sqlite3.connect(DB_PATH, timeout=10); row_factory = sqlite3.Row;
+PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL.
+One connection per request (FastAPI dependency get_db yields and closes).
+
+CREATE TABLE IF NOT EXISTS meta (
+  key TEXT PRIMARY KEY, value TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS bins (
+  bin_id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  group_type TEXT NOT NULL CHECK (group_type IN ('hostel','mess','department','mess_food')),
+  group_name TEXT NOT NULL,
+  stream TEXT NOT NULL CHECK (stream IN ('general','food')),
+  lat REAL NOT NULL, lon REAL NOT NULL,
+  capacity_l INTEGER NOT NULL CHECK (capacity_l > 0));
+
+CREATE TABLE IF NOT EXISTS nodes (
+  node_id TEXT PRIMARY KEY, name TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('depot','compost')),
+  lat REAL NOT NULL, lon REAL NOT NULL);
+
+CREATE TABLE IF NOT EXISTS vehicles (
+  vehicle_id TEXT PRIMARY KEY, capacity_l INTEGER NOT NULL,
+  fixed_cost_rs REAL NOT NULL, cost_per_km_rs REAL NOT NULL);
+
+CREATE TABLE IF NOT EXISTS fill_observations (
+  obs_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bin_id TEXT NOT NULL REFERENCES bins(bin_id),
+  observed_at TEXT NOT NULL,
+  fill_pct REAL NOT NULL CHECK (fill_pct >= 0 AND fill_pct <= 100),
+  source TEXT NOT NULL CHECK (source IN ('simulated','staff_tap','camera','pickup_reset')),
+  quality TEXT NOT NULL DEFAULT 'ok' CHECK (quality IN ('ok','suspect')));
+CREATE INDEX IF NOT EXISTS ix_obs_bin ON fill_observations(bin_id, obs_id);
+
+CREATE TABLE IF NOT EXISTS fill_forecasts (
+  forecast_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bin_id TEXT NOT NULL REFERENCES bins(bin_id),
+  created_at TEXT NOT NULL, plan_date TEXT NOT NULL, horizon_end TEXT NOT NULL,
+  current_fill_pct REAL, predicted_increment_pct REAL, predicted_fill_pct REAL,
+  p10_fill_pct REAL, p90_fill_pct REAL,
+  p_overflow REAL CHECK (p_overflow IS NULL OR (p_overflow >= 0 AND p_overflow <= 1)),
+  model_version TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS plans (
+  plan_id TEXT PRIMARY KEY, plan_date TEXT NOT NULL, tau REAL NOT NULL,
+  created_at TEXT NOT NULL, chosen_fleet_size INTEGER,
+  status TEXT NOT NULL CHECK (status IN ('draft','committed','superseded')),
+  response_json TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS route_plans (
+  route_id TEXT PRIMARY KEY, plan_id TEXT NOT NULL REFERENCES plans(plan_id),
+  fleet_size INTEGER NOT NULL, vehicle_id TEXT NOT NULL,
+  stream TEXT NOT NULL CHECK (stream IN ('general','food')),
+  start_node TEXT NOT NULL, end_node TEXT NOT NULL,
+  ordered_bin_ids TEXT NOT NULL,          -- JSON array of bin_id
+  km REAL NOT NULL, minutes REAL NOT NULL, load_l REAL NOT NULL,
+  est_cost_rs REAL NOT NULL, feasible INTEGER NOT NULL CHECK (feasible IN (0,1)));
+
+CREATE TABLE IF NOT EXISTS pickup_decisions (
+  decision_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  plan_id TEXT NOT NULL REFERENCES plans(plan_id),
+  plan_date TEXT NOT NULL, bin_id TEXT NOT NULL REFERENCES bins(bin_id),
+  tau REAL NOT NULL, selected INTEGER NOT NULL CHECK (selected IN (0,1)),
+  reason_code TEXT NOT NULL CHECK (reason_code IN
+    ('overflowing_now','reported','needs_review','p_over_tau','below_tau')),
+  reason TEXT NOT NULL, p_overflow REAL, forecast_id INTEGER, report_id INTEGER,
+  missed INTEGER NOT NULL DEFAULT 0 CHECK (missed IN (0,1)),
+  created_at TEXT NOT NULL);
+
+CREATE TABLE IF NOT EXISTS pickup_events (
+  pickup_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  route_id TEXT NOT NULL, bin_id TEXT NOT NULL REFERENCES bins(bin_id),
+  completed_at TEXT NOT NULL, collected_volume_l REAL NOT NULL,
+  level TEXT CHECK (level IS NULL OR level IN ('low','medium','full')),
+  staff_note TEXT,
+  UNIQUE (route_id, bin_id));
+  -- history pickups written by the seed use route_id 'HIST-YYYY-MM-DD'
+  -- (no foreign key on route_id because history routes are not in route_plans)
+
+CREATE TABLE IF NOT EXISTS batch_events (
+  batch_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  source_pickup_ids TEXT NOT NULL,        -- JSON array, one pickup_id
+  stream TEXT NOT NULL CHECK (stream IN ('general','food')),
+  destination TEXT NOT NULL CHECK (destination IN ('depot','compost_stop')),
+  status TEXT NOT NULL CHECK (status IN ('pending_handoff','delivered_to_compost')),
+  volume_l REAL NOT NULL);
+
+CREATE TABLE IF NOT EXISTS overflow_reports (
+  report_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  bin_id TEXT NOT NULL REFERENCES bins(bin_id),
+  kind TEXT NOT NULL CHECK (kind IN ('overflow','missed_collection')),
+  reported_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  reporter_role TEXT NOT NULL CHECK (reporter_role IN ('staff','qr','supervisor')),
+  photo_path TEXT,
+  status TEXT NOT NULL CHECK (status IN ('open','in_plan','resolved','rejected')),
+  verified INTEGER NOT NULL CHECK (verified IN (0,1)),
+  report_count INTEGER NOT NULL DEFAULT 1);
+
+CREATE TABLE IF NOT EXISTS item_checks (
+  check_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  image_path TEXT NOT NULL, predicted_class TEXT NOT NULL,
+  confidence REAL NOT NULL, hazardous INTEGER NOT NULL CHECK (hazardous IN (0,1)),
+  unsure INTEGER NOT NULL CHECK (unsure IN (0,1)),
+  suggested_bin TEXT, model_version TEXT NOT NULL,
+  checked_at TEXT NOT NULL, bin_id TEXT);
+
+CREATE TABLE IF NOT EXISTS mess_waste_logs (
+  log_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  mess_id TEXT NOT NULL,                  -- e.g. 'Mess 1' (= bins.group_name)
+  date TEXT NOT NULL,
+  meal TEXT NOT NULL CHECK (meal IN ('breakfast','lunch','snacks','dinner')),
+  category TEXT NOT NULL CHECK (category IN ('plate','kitchen_prep','unserved')),
+  weight_kg REAL NOT NULL CHECK (weight_kg > 0 AND weight_kg <= 500),
+  weighed INTEGER NOT NULL CHECK (weighed IN (0,1)),
+  logged_by TEXT NOT NULL,
+  source TEXT NOT NULL CHECK (source IN ('simulated','staff')),
+  created_at TEXT NOT NULL);
+
+db.py also provides: get_conn(db_path=None), init_db(reset=False, db_path=None)
+(reset=True deletes the file first), get_db() FastAPI dependency,
+get_meta(conn, key) -> str|None, set_meta(conn, key, value),
+now_iso() -> current time ISO string in TZ.
+
+---------------------------------------------------------------------
+8. SYNTHETIC SCENARIO AND SIMULATOR RULES  (P1: app/sim/*)
+---------------------------------------------------------------------
+Layout (50 bins), defined in app/sim/scenario.py:
+  Hostels "Hostel A".."Hostel F": 5 bins each, ids HA-1..HA-5 ... HF-5,
+    group_type hostel, stream general, capacity 240 L,
+    name "Hostel A bin 1".
+  Messes "Mess 1".."Mess 3": per mess 2 general bins M1-G1, M1-G2
+    (group_type mess, 660 L, name "Mess 1 general bin 1") and 2 food bins
+    M1-F1, M1-F2 (group_type mess_food, stream food, 120 L,
+    name "Mess 1 food bin 1").
+  Departments "Dept 1".."Dept 4": 2 bins each, D1-1, D1-2 ...,
+    group_type department, 120 L, name "Dept 1 bin 1".
+  Total 30 + 6 + 6 + 8 = 50.
+  Positions (rng = numpy.random.default_rng(SEED)): each group centre is
+  uniform within CAMPUS_CENTER +/- (0.006 lat, 0.007 lon); each bin is its
+  group centre +/- uniform 0.0005 in lat and lon. Positions are synthetic.
+  Optional override: if backend/data/real_bins.csv exists (columns:
+  bin_id,name,lat,lon) its values replace those bins' name/lat/lon.
+
+Daily cycle for simulated day d:
+  09:00  pickups decided from the 20:00 observation of day d-1 reset the
+         true fill of those bins to 0
+  09:00-20:00  the day's fill increment is added
+  20:00  observation: observed = clip(round(true + Normal(0, 4)), 0, 100)
+  overflow event = true fill >= 100 at 20:00
+  true fill is capped at 130 (spill)
+Daily increment (percent of capacity) for general bins:
+  BASE_RATE_PCT = {"hostel": 22, "mess": 30, "department": 15}
+  x WEEKDAY_FACTOR: hostel Sat/Sun 1.15; department Sat 0.4, Sun 0.2;
+    mess Sat/Sun 0.9; all other days 1.0
+  x EXAM_FACTOR during exam weeks: hostel 1.25, department 0.8, mess 1.0
+    exam weeks (synthetic) = the 7 days starting scenario_date - 28 days,
+    and the 7 days starting scenario_date + 14 days
+  x bin multiplier, fixed per bin, uniform(0.6, 1.4)
+  x daily noise exp(Normal(0, 0.25))
+Food bins: increment comes from that day's mess logs:
+  MEAL_BASE_KG = {"breakfast": 6, "lunch": 14, "snacks": 3, "dinner": 16}
+  x mess multiplier uniform(0.8, 1.2) x exp(Normal(0, 0.2)) per meal
+  split by category shares plate 0.5, kitchen_prep 0.3, unserved 0.2
+  -> one log row per meal per category, weight rounded to 0.1 kg,
+     weighed = 1 with probability 0.7, source 'simulated',
+     logged_by 'simulated', created_at = date 20:00
+  food litres = total_kg / FOOD_DENSITY_KG_PER_L, split equally over the
+  mess's 2 food bins; increment pct = litres / capacity_l * 100
+Missing readings: each bin-day observation is missing with probability
+  0.02; additionally 2 fixed bins (chosen by rng) have their last 2 days of
+  observations missing, so they are STALE in the demo.
+History: 45 days ending on scenario_date (inclusive), run under
+  history policy B: visit a bin the next morning if its observed fill > 70
+  (or if the reading was missing for 2 days in a row). Each history pickup
+  is stored in pickup_events with route_id 'HIST-<date>', completed_at
+  <date>T09:00:00+05:30, collected_volume_l = true fill x capacity (capped
+  at capacity), level NULL. History pickups do NOT create batches.
+The seed (app/seed.py, owner P1) writes: meta, bins, nodes, vehicles (from
+  config), fill_observations (source 'simulated'), pickup_events (history),
+  mess_waste_logs (45 days). It does NOT write forecasts, plans or reports.
+
+---------------------------------------------------------------------
+9. FORECAST, P(OVERFLOW) AND SELECTION RULES  (P1)
+---------------------------------------------------------------------
+Increment data (from observations + pickups):
+  For a bin, take consecutive daily observations o(d-1), o(d) of sources
+  simulated/staff_tap/camera. If a pickup happened between them, the
+  observed increment is o(d); otherwise o(d) - o(d-1). Skip pairs where
+  either value is 100 (censored) or a day is missing. 'pickup_reset' rows
+  are reset markers, not data points.
+Features for target day t: group_type (one-hot), weekday of t (0-6),
+  is_weekend, exam_week flag, capacity_l, mean of the bin's last 7 valid
+  increments, last valid increment, and for food bins the previous day's
+  total mess-log kg of that mess (0 for other bins).
+Model: scikit-learn GradientBoostingRegressor(loss="quantile", alpha=a,
+  n_estimators=200, max_depth=3, learning_rate=0.05, random_state=0)
+  trained three times, a = 0.1, 0.5, 0.9 -> inc_p10, inc_p50, inc_p90.
+  Sort the three so p10 <= p50 <= p90; clip increments at >= 0.
+Evaluation (time split, never random): the last 10 days of history are
+  validation, earlier days training. Report MAE of inc_p50, MAE of the
+  persistence baseline ("tomorrow's increment = last observed increment"),
+  and coverage = share of validation targets inside [p10, p90].
+  Then retrain on all history for live forecasts.
+  model_version = "gbq-v1-" + scenario_date.
+P(overflow):
+  current = latest observed fill_pct (Section 5)
+  sigma = max((inc_p90 - inc_p10) / 2.563, 1.0)
+  z = (100 - (current + inc_p50)) / sigma
+  p_overflow = 0.5 * math.erfc(z / math.sqrt(2))
+  predicted_fill_pct = current + inc_p50 (may exceed 100; do not cap)
+  p10_fill_pct = current + inc_p10, p90_fill_pct = current + inc_p90
+  If the bin has no observation: current, predicted values and
+  p_overflow are null.
+Selection rule for each bin, first matching rule wins:
+  1 overflowing_now  latest fill_pct >= 100                selected=1
+  2 reported         an overflow report with status open
+                     or in_plan exists for the bin          selected=1
+  3 needs_review     the bin is STALE                       selected=1
+  4 p_over_tau       p_overflow > tau                       selected=1
+  5 below_tau        otherwise                              selected=0
+  tau must satisfy TAU_MIN <= tau <= TAU_MAX, else HTTP 422.
+Reason text (exact templates, Python f-strings):
+  overflowing_now: f"Overflowing now (last reading {fill:.0f}%)"
+  reported:        f"Reported {kind_text} by {role} - {status}"
+                   kind_text = "overflow" or "missed pickup"
+  needs_review:    "No fresh reading in 36 h - visit and tap a level"
+  p_over_tau:      f"{p:.0%} chance of overflow tomorrow, above tau = {tau:.2f}"
+  below_tau:       f"{p:.0%} chance of overflow tomorrow, below tau = {tau:.2f}"
+Demand for a selected bin (litres):
+  stale with no reading: capacity_l * STALE_DEMAND_PCT / 100
+  otherwise: capacity_l * max(current, MIN_DEMAND_PCT) / 100
+  Every demand is an estimate: demand_uncertain = true.
+Summary: selected, skipped (below_tau count), needs_review, reported,
+  overflowing_now, expected_overflows_skipped = round(sum of p_overflow
+  over below_tau bins, 2).
+Decisions computed by POST /api/decisions are NOT stored. They are stored
+  only when a plan is committed (POST /api/routes/{plan_id}/choose).
+
+---------------------------------------------------------------------
+10. ROUTING RULES  (P2: app/routing/*)
+---------------------------------------------------------------------
+Distances: haversine (Earth radius 6371.0 km) x DETOUR_FACTOR = road km.
+  Integer metres for OR-Tools = round(road_km * 1000).
+Minutes of a route = road_km / SPEED_KMPH * 60 + SERVICE_MIN_PER_BIN * stops.
+Effective vehicle capacity = capacity_l * CAPACITY_BUFFER.
+Streams: general stops and food stops never share a route.
+  General routes: DEPOT -> stops -> DEPOT.  Food routes: DEPOT -> stops -> COMPOST.
+Vehicles for fleet size k = the first k of VEHICLES (one route per vehicle).
+  If food stops exist and k >= 2: the last vehicle serves food, the other
+  k-1 serve general. If only one stream has stops: all k serve it.
+  If k == 1 and both streams have stops: the vehicle serves general and
+  every food stop is unassigned (alternative infeasible).
+Stage 1 - cluster (per stream, n clusters = vehicles for that stream):
+  seeds: first seed = highest-demand stop; next seed = stop maximising
+  (distance to nearest existing seed) x demand. Then up to 10 iterations:
+  order stops by (distance to nearest centroid / demand) ascending; assign
+  each to the nearest centroid whose cluster still has capacity; recompute
+  centroids as demand-weighted mean lat/lon; stop when assignments do not
+  change. Stops that fit nowhere are unassigned.
+Stage 2 - assign vehicles: sort clusters by load (desc) and give them to
+  that stream's vehicles in order. Then one refinement pass: move a stop to
+  another cluster of the same stream if that lowers its distance to the
+  cluster centroid and capacity still holds.
+Stage 3 - order stops: OR-Tools single-vehicle routing per cluster with
+  start node DEPOT and end node DEPOT or COMPOST.
+    from ortools.constraint_solver import pywrapcp, routing_enums_pb2
+    manager = pywrapcp.RoutingIndexManager(n_nodes, 1, [start], [end])
+    first_solution_strategy = PATH_CHEAPEST_ARC
+    fast=False: also GUIDED_LOCAL_SEARCH with time limit ORTOOLS_TIME_LIMIT_S
+    fast=True : first solution only (used by the twin and the scale lab)
+  If the OR-Tools import or solve fails, fall back to nearest-neighbour
+  order and set "solver": "fallback_nearest_neighbor" on that route.
+Feasibility gate (after stage 3): if a route exceeds SHIFT_MIN, move its
+  stop with the largest removal saving to another same-stream route that
+  has capacity and time; if none can take it, mark it unassigned.
+  An alternative is feasible only if: every selected stop appears exactly
+  once across routes or in unassigned_bin_ids, unassigned is empty, every
+  load <= effective capacity, every route minutes <= SHIFT_MIN.
+Cost of an alternative = (number of non-empty routes x fixed_cost_rs) +
+  (total km x cost_per_km_rs).
+Recommended alternative = the feasible one with lowest total_cost_rs,
+  ties broken by lower total_km. null if none feasible.
+Baseline = nearest neighbour without clustering, same stops, same stream
+  rule, same fleet size as the recommended alternative (k=2 if none
+  feasible), same capacity, shift and distance rules: from the start node,
+  repeatedly go to the nearest unvisited stop of the stream that still
+  fits capacity and shift, then go to the end node; next vehicle.
+
+---------------------------------------------------------------------
+11. REPORTS, PICKUPS, BATCHES, MESS LOGS
+---------------------------------------------------------------------
+Reports (P2):
+  verified = 1 if reporter_role in ('staff','supervisor') else 0.
+  Merge: if the bin already has a report with status open or in_plan, do
+  not insert; increment report_count, set updated_at, and set verified=1 if
+  the new one is verified. Response says merged=true.
+  Missed collection: when a report arrives, look at the bin's decision in
+  the latest committed plan (plans.status='committed', newest created_at).
+  If that decision had selected=0 and reason_code='below_tau', set
+  missed=1 on it (once) and return missed_collection=true.
+  Lifecycle: open -> in_plan (when a committed plan includes the bin)
+  -> resolved (when a pickup of that bin is confirmed). open -> rejected
+  (dispatcher, POST /api/reports/{id}/reject; only from open).
+  Reports can only ADD stops; nothing removes a bin from a plan.
+Pickups (P3):
+  The bin must be in that route's ordered_bin_ids, else HTTP 400.
+  A second confirmation for the same (route_id, bin_id) -> HTTP 409
+  "Pickup already confirmed".
+  collected_volume_l = LEVEL_PCT[level] x capacity / 100 if level given,
+  else latest observed fill x capacity / 100 (estimate).
+  On success, in one transaction: insert pickup_events row; insert a
+  fill_observations row (fill_pct 0, source 'pickup_reset'); insert one
+  batch_events row (stream = bin stream, destination 'compost_stop' for
+  food else 'depot', status 'pending_handoff', source_pickup_ids
+  "[<pickup_id>]", volume_l = collected volume); set that bin's open or
+  in_plan reports to resolved.
+  Compost arrival: POST /api/pickups/arrive-compost {route_id}. The route
+  must have stream 'food' (else 400) and all its stops confirmed (else 409).
+  Then its food batches change to status 'delivered_to_compost'.
+  CHAKRA records delivery only; it never reports compost produced.
+Mess logs (P3): mess_id must be an existing mess group_name ("Mess 1".."Mess 3"),
+  date defaults to today (UTC+05:30), weight_kg in (0, 500], source 'staff'.
+
+---------------------------------------------------------------------
+12. DIGITAL TWIN RULES  (P1: app/twin/policies.py)
+---------------------------------------------------------------------
+- Runs fully in memory (no database). Same layout as the app (SEED 42),
+  fill noise seeds = (11, 22, 33).
+- Per seed: 45 warm-up days under history policy B, then train the
+  forecast model on the warm-up history; then 30 evaluation days.
+- Common random numbers: draw the evaluation increments and mess logs once
+  per seed, and run every policy from the same starting state with them.
+- Policies: A = visit every bin every day; B = observed fill > 70 or >= 100
+  or stale; C(tau) = Section 9 selection rule without reports.
+- Each day: decide from the 20:00 observation -> plan_routes(stops,
+  fast=True) -> use the recommended alternative (if none, the alternative
+  with the fewest unassigned stops; unassigned bins are not picked).
+- All three policies use the SAME router, so the twin compares selection
+  policies only. Routing gain vs nearest neighbour is shown separately.
+- Outputs per seed and policy: km, route_minutes (sum), cost_rs,
+  overflow_events (bin-days with true fill >= 100 at 20:00), pickups,
+  bin_days. Sweep C over tau = 0.1, 0.2, ..., 0.9. Aggregate mean, min,
+  max across seeds. Sensitivity: seed 11, policies A and C(0.5), detour
+  factor 1.2, 1.3, 1.5.
+- Cache file: backend/data/demo_cache/twin.json (committed to git).
+
+---------------------------------------------------------------------
+13. ITEM CLASSIFIER RULES  (P1: ml/*, app/classifier/infer.py)
+---------------------------------------------------------------------
+Model classes (exact order): ["battery","metal","organic","other","paper","plastic"]
+Folder-label normalisation: lowercase, spaces and hyphens -> "_".
+Label map (normalised source folder name -> class):
+  paper->paper, cardboard->paper, plastic->plastic, metal->metal,
+  biological->organic, food_organics->organic, vegetation->organic,
+  trash->other, miscellaneous_trash->other, textile_trash->other,
+  clothes->other, shoes->other, glass->other, brown_glass->other,
+  green_glass->other, white_glass->other, battery->battery,
+  batteries->battery
+  Unknown folder name -> stop with an error listing the unknown names;
+  the human may pass --map name=class to extend the map.
+Datasets (human downloads them; do not hard-code download URLs or slugs):
+  "Garbage Classification (12 classes)" on Kaggle (main source),
+  "RealWaste" (UCI Machine Learning Repository; CC BY-NC-SA 4.0),
+  "TrashNet" (GitHub repository by Gary Thung; optional).
+Training: mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.DEFAULT),
+  replace model.classifier[3] with nn.Linear(in_features, 6); input 224;
+  ImageNet mean/std; class-weighted cross-entropy; AdamW lr 3e-4;
+  8 epochs; batch 64; stratified 80/10/10 split (seed 0) of the training
+  sources; holdout source for the shift test = RealWaste.
+Saved file backend/data/model/item_classifier.pt = torch.save of a dict:
+  {"state_dict", "classes", "arch": "mobilenet_v3_small", "img_size": 224,
+   "mean", "std", "model_version"}  (plain types only, so
+   torch.load(..., weights_only=True) works)
+Report file backend/data/model/classifier_report.json with random_test,
+  shift_test and (optional) campus_test: accuracy, per-class precision,
+  recall, f1, support, confusion matrix, image counts. Numbers are only ever
+  read from this file; never typed by hand.
+Inference rules:
+  confidence = softmax top-1 probability; top3 list.
+  unsure = confidence < CLASSIFIER_CONFIDENCE_MIN -> suggested_bin null and
+    the UI says "Unsure - ask staff".
+  hazardous = predicted class is battery (regardless of confidence).
+  SUGGESTED_BIN (placeholder campus bin names, replace with real ones):
+    paper   -> "Dry waste - paper"
+    plastic -> "Dry waste - plastic"
+    metal   -> "Dry waste - metal"
+    organic -> "Wet waste - food and organic"
+    other   -> "Other / reject"
+    battery -> "Hazardous - hand over for special pickup"
+  If torch is not installed or the model file is missing, the endpoint
+  returns HTTP 503 {"detail": "Classifier model not available"} and the
+  rest of the app keeps working.
+The classifier checks ONE item. It never feeds routing or selection.
+
+---------------------------------------------------------------------
+14. HTTP API CONTRACT  (prefix /api; JSON unless noted)
+---------------------------------------------------------------------
+Errors: FastAPI default {"detail": "..."} with 400/404/409/422/503.
+
+[P2] GET /api/health -> {"status":"ok"}
+[P2] GET /api/scenario -> {"scenario_date","plan_date","scenario_now",
+     "timezone": TZ_LABEL, "synthetic": true, "seed", "bins_count",
+     "nodes":[node rows], "vehicles":[vehicle rows],
+     "assumptions":{"detour_factor","speed_kmph","service_min_per_bin",
+       "shift_min","capacity_buffer","level_pct","stale_hours",
+       "food_density_kg_per_l","tau_default","tau_min","tau_max"}}
+     404 "Database not seeded - run python -m app.seed" if meta is empty.
+[P2] POST /api/demo/reset -> re-runs app.seed.run_seed(seed=42) on the
+     main database (keeps demo_cache files) -> {"ok":true,"summary":{...}}
+
+[P1] GET /api/bins -> {"bins":[{"bin_id","name","group_type","group_name",
+     "stream","lat","lon","capacity_l","latest_fill_pct","latest_observed_at",
+     "latest_source","stale"}]}
+[P1] GET /api/bins/{bin_id}/history?days=14 -> {"bin_id",
+     "observations":[{"observed_at","fill_pct","source"}],
+     "pickups":[{"completed_at","route_id"}]}   404 unknown bin
+[P1] POST /api/observations body {"bin_id", "level": "low|medium|full"}
+     OR {"bin_id","fill_pct": 0-100}; optional "source" default "staff_tap"
+     -> {"observation":{"obs_id","bin_id","observed_at","fill_pct","source"}}
+     422 if both or neither of level/fill_pct; 404 unknown bin
+[P1] POST /api/forecasts body {} -> computes and stores forecasts for
+     plan_date -> {"plan_date","model_version","forecasts":[{"forecast_id",
+     "bin_id","current_fill_pct","predicted_increment_pct",
+     "predicted_fill_pct","p10_fill_pct","p90_fill_pct","p_overflow",
+     "horizon_end"}]}
+[P1] GET /api/forecasts/latest -> same shape, latest stored set
+     (404 if none)
+[P1] GET /api/forecasts/eval -> {"model_version","train_days","val_days",
+     "mae_model","mae_baseline","interval_coverage","n_val"}
+[P1] POST /api/decisions body {"tau": 0.5} -> {"plan_date","tau",
+     "decisions":[{"bin_id","name","group_type","group_name","stream","lat",
+     "lon","capacity_l","current_fill_pct","predicted_fill_pct",
+     "p_overflow","selected","reason_code","reason","report_id",
+     "demand_l","demand_uncertain"}],
+     "summary":{"selected","skipped","needs_review","reported",
+     "overflowing_now","expected_overflows_skipped"}}   (not stored)
+[P1] GET /api/twin -> contents of demo_cache/twin.json
+     (404 "Twin results not cached - run POST /api/twin/run")
+     twin.json shape: {"generated_at","synthetic":true,"days":30,
+     "seeds":[11,22,33],"policies":[{"policy":"A_fixed"|"B_rule70"|"C_chakra",
+     "tau":null|0.5,"mean":{"km","route_minutes","cost_rs","overflow_events",
+     "pickups"},"min":{...},"max":{...}}],
+     "sweep":[{"tau","mean":{...},"min":{...},"max":{...}}],
+     "sensitivity":[{"detour_factor","policy","km","overflow_events"}],
+     "assumptions":{...}}
+[P1] POST /api/twin/run -> runs the twin (may take minutes), writes the
+     cache, returns it
+[P1] GET /api/classify/status -> {"available","model_version","classes",
+     "report": <classifier_report.json content or null>}
+[P1] POST /api/classify multipart: "photo" (jpeg/png, <= 8 MB),
+     optional "bin_id" -> {"check_id","predicted_class","confidence",
+     "hazardous","unsure","suggested_bin","top3":[{"class","confidence"}],
+     "model_version","checked_at"}   400 bad file, 503 unavailable
+
+[P2] POST /api/routes body {"tau":0.5, "fleet_sizes":[1,2,3], "fast":false}
+     -> runs selection (same function as /api/decisions), then routing,
+     stores a draft plan -> {"plan_id","plan_date","tau",
+     "decisions_summary":{...},"selected_bin_ids":[...],
+     "alternatives":[{"fleet_size","feasible","manual_dispatch_required",
+       "total_km","completion_minutes","total_minutes","total_cost_rs",
+       "vehicles_used","unassigned_bin_ids":[...],
+       "routes":[{"vehicle_id","stream","start_node","end_node",
+         "stops":[{"seq","bin_id","name","lat","lon","demand_l"}],
+         "ordered_bin_ids","km","minutes","load_l","est_cost_rs",
+         "solver","polyline":[[lat,lon],...]}]}],
+     "recommended_fleet_size": int|null,
+     "baseline":{"method":"nearest_neighbor", <same fields as an alternative>},
+     "savings_vs_baseline":{"km","km_pct","cost_rs"} | null,
+     "assumptions":{...}, "synthetic": true}
+     plan_id = "P-" + plan_date + "-" + uuid4().hex[:6]
+[P2] GET /api/routes/{plan_id} -> stored response_json (404 unknown)
+[P2] POST /api/routes/{plan_id}/choose body {"fleet_size":2} -> commits:
+     409 "This alternative is infeasible - manual dispatch required" if
+     infeasible; otherwise marks older committed plans of the same
+     plan_date 'superseded', stores route_plans (route_id =
+     plan_id + "-" + vehicle_id), stores the plan's decisions in
+     pickup_decisions, sets reports of selected reported bins to in_plan
+     -> {"plan_id","status":"committed","route_ids":[...]}
+[P2] GET /api/worker/routes -> latest committed plan ->
+     {"plan_id","plan_date","routes":[{"route_id","vehicle_id","stream",
+     "end_node","stops":[{"seq","bin_id","name","lat","lon","done",
+     "completed_at"}],"all_done","compost_delivered"}]}
+     404 "No committed plan yet - choose a plan on Plan tomorrow"
+[P2] POST /api/reports multipart: "bin_id","kind","reporter_role",
+     optional "photo" -> {"report":{...row...},"merged","missed_collection"}
+[P2] GET /api/reports?status=open|in_plan|resolved|rejected|all
+     (default open) -> {"reports":[{...row..., "bin_name"}]}
+[P2] POST /api/reports/{report_id}/reject -> {"report":{...}}
+     409 if status is not open
+[P2] GET /api/scale-lab -> contents of demo_cache/scale_lab.json (404 if
+     missing); POST /api/scale-lab/run -> runs, writes cache, returns it
+     shape: {"generated_at","synthetic":true,"instances":[{"name":
+     "campus"|"city","bins","vehicles","three_stage":{"km","runtime_s",
+     "feasible"},"nearest_neighbor":{"km","runtime_s","feasible"}}]}
+
+[P3] POST /api/pickups body {"route_id","bin_id", optional "level",
+     optional "staff_note"} -> {"pickup":{...},"batch":{...}}
+[P3] POST /api/pickups/arrive-compost body {"route_id"} ->
+     {"route_id","delivered_batches": int}
+[P3] GET /api/batches?status=pending_handoff|delivered_to_compost|all
+     -> {"batches":[...], "totals":[{"stream","status","count","volume_l"}]}
+[P3] POST /api/mess-logs body {"mess_id","meal","category","weight_kg",
+     "weighed", optional "date", optional "logged_by"} -> {"log":{...}}
+[P3] GET /api/mess-logs?days=14&mess_id= -> {"logs":[latest 100],
+     "daily":[{"date","mess_id","total_kg"}],
+     "by_meal":[{"meal","avg_kg"}], "synthetic_rows": int, "staff_rows": int}
+[P3] GET /api/dashboard -> {"scenario":{"scenario_date","plan_date",
+     "synthetic":true},
+     "fill_trend":[{"date","avg_fill_pct","full_bins"}] (last 14 days,
+       sources simulated/staff_tap/camera; full_bins = readings at 100),
+     "forecast":{"created_at","mean_p_overflow","bins_over_half"} | null,
+     "plan":{"plan_id","plan_date","tau","selected","skipped",
+       "km","baseline_km","saving_pct"} | null,
+     "pickups":{"live_total","today"},
+     "reports":{"open","in_plan","resolved","rejected","missed_collections"},
+     "batches":{"pending_handoff_l","delivered_to_compost_l"},
+     "mess":{"last7_total_kg","by_meal_avg_kg":{...}}}
+
+---------------------------------------------------------------------
+15. PYTHON INTERFACES BETWEEN MODULES  (exact signatures)
+---------------------------------------------------------------------
+app.db (P2):
+  get_conn(db_path=None) -> sqlite3.Connection
+  init_db(reset: bool = False, db_path=None) -> None
+  get_db()  (FastAPI dependency, yields a connection)
+  get_meta(conn, key) -> str | None ;  set_meta(conn, key, value) -> None
+  now_iso() -> str
+app.seed (P1):
+  run_seed(seed: int = 42, scenario_date: datetime.date | None = None,
+           db_path=None) -> dict      (summary counts)
+  CLI: python -m app.seed [--seed 42] [--date YYYY-MM-DD] [--with-twin] [--with-scale]
+app.sim.simulator (P1):
+  build_layout(seed: int = 42) -> list[dict]        (bins table rows)
+  simulate(layout, start_date, n_days, policy, seed, ...) -> dict
+     (internal; used by seed and twin; P1 decides the details)
+app.forecast.model (P1):
+  forecast_bins(conn, plan_date: datetime.date) -> list[dict]  (not stored)
+  persist_forecasts(conn, forecasts: list[dict]) -> list[dict] (with ids)
+  evaluate(conn) -> dict                                     (eval report)
+app.selection.select (P1):
+  p_overflow_from_quantiles(current, inc_p10, inc_p50, inc_p90) -> float
+  classify_bin(current_fill_pct, p_overflow, is_stale, open_report,
+               tau) -> tuple[bool, str]          (selected, reason_code)
+  decide(conn, tau: float, plan_date: datetime.date | None = None) -> dict
+       (the POST /api/decisions response body)
+app.twin.policies (P1):
+  run_twin(seeds=(11, 22, 33), days=30) -> dict ;  load_twin_cache() -> dict | None
+app.classifier.infer (P1):
+  classifier_status() -> dict ;  classify_image(image_bytes: bytes) -> dict
+  class ClassifierUnavailable(Exception)
+app.routing.types (P2):
+  @dataclass Stop: bin_id: str, name: str, lat: float, lon: float,
+                   stream: str, demand_l: float
+  @dataclass RoutingSettings: vehicles: list[dict], nodes: list[dict],
+     detour_factor, speed_kmph, service_min_per_bin, shift_min,
+     capacity_buffer   (all defaults from app.config)
+app.routing.plan (P2):
+  plan_routes(stops: list[Stop], fleet_sizes=(1, 2, 3), fast: bool = False,
+              settings: RoutingSettings | None = None) -> dict
+      returns {"alternatives":[...], "recommended_fleet_size": int|None}
+  baseline_nearest_neighbor(stops, fleet_size: int,
+              settings: RoutingSettings | None = None) -> dict  (one alternative)
+  (Both are pure functions: no database access.)
+app.reports.service (P2):
+  active_reports_by_bin(conn) -> dict[str, dict]   (status open/in_plan)
+  mark_in_plan(conn, bin_ids: list[str]) -> None
+  mark_resolved(conn, bin_id: str) -> int
+app.pickups.service (P3):
+  confirm_pickup(conn, route_id, bin_id, level=None, staff_note=None) -> dict
+  arrive_compost(conn, route_id) -> dict
+  list_batches(conn, status="all") -> dict
+app.mess.service (P3):
+  create_log(conn, body: dict) -> dict
+  list_logs(conn, days: int = 14, mess_id: str | None = None) -> dict
+app.dashboard.service (P3):
+  build_dashboard(conn) -> dict
+app.scale_lab.run (P2):  run_scale_lab() -> dict ;  load_scale_cache() -> dict | None
+
+---------------------------------------------------------------------
+16. FRONTEND CONTRACT
+---------------------------------------------------------------------
+16.1 Routes (react-router-dom v6, BrowserRouter, in App.jsx):
+  /            -> redirect to /map
+  /map         RiskMap        (P3)   in nav "Risk map"
+  /plan        PlanTomorrow   (P3)   "Plan tomorrow"
+  /worker      Worker         (P3)   "Worker"
+  /reports     ReportsQueue   (P2)   "Reports"
+  /check       CheckItem      (P1)   "Check an item"
+  /mess        MessLog        (P3)   "Mess log"
+  /twin        TwinLab        (P3)   "Twin lab"
+  /dashboard   Dashboard      (P3)   "Dashboard"
+  /scale       ScaleLab       (P2)   "Scale lab"
+  /qr          QrSheet        (P2)   not in nav (printable QR codes)
+  /bin/:binId/report  BinReport (P2) not in nav, no Layout (phone page)
+16.2 src/api.js (P3 writes ALL of these in P3-1; nobody else edits it).
+  Base path "/api". Each function returns parsed JSON or throws
+  Error(detail). FormData functions must not set Content-Type manually.
+  getScenario(), resetDemo(),
+  getBins(), getBinHistory(binId, days=14),
+  postObservation(body), runForecasts(), getLatestForecasts(), getForecastEval(),
+  postDecisions(tau),
+  postRoutes({tau, fleet_sizes=[1,2,3], fast=false}), getPlan(planId),
+  choosePlan(planId, fleetSize), getWorkerRoutes(),
+  confirmPickup(body), arriveCompost(routeId), getBatches(status="all"),
+  postReport(formData), getReports(status="open"), rejectReport(reportId),
+  getClassifierStatus(), classifyItem(formData),
+  postMessLog(body), getMessLogs(days=14, messId=""),
+  getDashboard(), getTwin(), runTwin(), getScaleLab(), runScaleLab()
+16.3 Shared state: the tau slider value is stored in localStorage key
+  "chakra.tau" (string). Read/write inside try/catch; default 0.5.
+16.4 UI kit in src/ui/ (P3 creates simple versions in P3-1; P4 restyles
+  later WITHOUT changing names or props). index.js re-exports all.
+  Button {variant:"primary"|"secondary"|"danger"|"ghost", size:"sm"|"md",
+          disabled, onClick, type, children}
+  Card {title, actions, children}
+  Badge {kind:"implemented"|"simulated"|"proposed"|"new", children?}
+        (default text = IMPLEMENTED / SIMULATED / PROPOSED / NEW)
+  StatusPill {status:"selected"|"skipped"|"overflowing"|"reported"|"review"}
+  Slider {label, min, max, step, value, onChange(number), hint}
+  Stat {label, value, unit, hint}
+  DataTable {columns:[{key, label, render?}], rows, emptyText}
+  Layout {children}  (top nav with the 9 nav links of 16.1, a "Reset demo"
+         button calling resetDemo(), and a SIMULATED DATA notice)
+  PageHeader {title, subtitle, badges: array of Badge kinds}
+  Notice {kind:"info"|"error"|"success", children}
+  Loading {text}     EmptyState {title, children}
+  MapLegend {items:[{color, label}]}
+  colors.js: cssVar(name) and riskColor(decisionOrBin) ->
+    overflowing_now -> var(--color-overflow); reported -> var(--color-reported);
+    needs_review -> var(--color-review); p_overflow < 0.3 -> var(--color-risk-low);
+    < 0.6 -> var(--color-risk-mid); else var(--color-risk-high)
+  chartTheme.js: exported constants used by every Recharts chart
+    (series colors, grid color, font size)
+16.5 CSS variables in src/styles/tokens.css (names fixed; P4 may change values):
+  --color-bg --color-surface --color-text --color-muted --color-border
+  --color-primary --color-primary-contrast --color-danger --color-success
+  --color-risk-low --color-risk-mid --color-risk-high --color-overflow
+  --color-review --color-reported
+  --color-badge-implemented --color-badge-simulated --color-badge-proposed
+  --color-badge-new --color-p1 --color-p2 --color-p3
+  --radius --space-1 --space-2 --space-3 --space-4 --space-5 --space-6
+  --font-sans --font-mono --shadow
+  Starting values (from the plan PDF): primary #1E6B47, badge implemented
+  #1E6B47, simulated #C4561B, proposed #3D4A5C, new #0E8C8C,
+  p1 #2F6DB5, p2 #B8791F, p3 #9C2A6B, risk-low #2E9D5B, risk-mid #E0A21B,
+  risk-high #D2452F, overflow #7A1010, review #8A8F98, reported #7B3FC2.
+16.6 Map: react-leaflet MapContainer with an explicit CSS height; import
+  "leaflet/dist/leaflet.css" once in main.jsx; tiles from
+  https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png with attribution
+  "&copy; OpenStreetMap contributors"; draw bins with CircleMarker (not the
+  default Marker, whose icon images break under Vite). If tiles fail
+  offline, markers must still show.
+16.7 Charts: Recharts inside a parent element with an explicit height.
+
+---------------------------------------------------------------------
+17. HONESTY LABELS
+---------------------------------------------------------------------
+- Every page header shows badges: pages showing scenario data or twin
+  results show SIMULATED; working features show IMPLEMENTED; anything not
+  built (cameras, compost output, recycler) is only ever text marked PROPOSED.
+- The UI never states measured savings, campus accuracy, recycled or
+  composted kilograms. Savings are "simulated savings".
+- Classifier accuracy shown in the UI is read from classifier_report.json
+  and labelled with the test set it came from.
+- Mess-log rows from the seed are labelled simulated; rows typed by staff
+  are labelled staff.
+
+---------------------------------------------------------------------
+18. GIT WORKFLOW
+---------------------------------------------------------------------
+- One GitHub repo "chakra", branch main. Everyone works on main because
+  files are owned by exactly one person.
+- Before starting a prompt: git pull --rebase
+- After a prompt passes its checks:
+    git add <only your files>
+    git commit -m "P1: <short summary>"
+    git pull --rebase
+    git push
+- Never "git add ." or "git add -A". Never force-push.
+- Never commit backend/.venv, node_modules, *.db, uploads or model files.
+  The trained model file is shared by the human through a drive link and
+  copied to backend/data/model/.
+
+---------------------------------------------------------------------
+19. ACCEPTANCE TESTS (definition of done)
+---------------------------------------------------------------------
+T1  current 20%, inc p10/p50/p90 = 30/40/50 (forecast 60%) -> below_tau
+    at tau 0.5;  current 75%, inc 20/30/40 (forecast 105%) -> p_over_tau.  [P1]
+T2  Changing tau changes only bins whose reason is p_over_tau/below_tau.  [P1]
+T3  Stale or missing readings -> needs_review, selected.                  [P1]
+T4  Every selected bin served exactly once or listed unassigned;
+    capacity and shift hold; infeasible input lists unassigned bins.     [P2]
+T5  Baseline uses the same stops, fleet size, capacity, distances.       [P2]
+T6  Food and general never share a route; food routes end at COMPOST.    [P2]
+T7  Choosing an infeasible alternative -> 409.                           [P2]
+T8  A report on a below_tau bin of the committed plan -> missed=1 once;
+    the next decide() selects it with reason_code 'reported';
+    two reports on one bin -> one active report (merged);
+    a rejected report adds nothing.                                       [P2]
+T9  A confirmed pickup creates exactly one batch and one pickup_reset
+    observation; a second confirmation -> 409.                           [P3]
+T10 arrive-compost only for a fully confirmed food route; food batches
+    become delivered_to_compost.                                         [P3]
+T11 The dashboard never reports recycled or composted kilograms.         [P3]
+T12 battery -> hazardous true; confidence below 0.6 -> unsure true and
+    suggested_bin null (test with a fake model output).                  [P1]
+T13 /api/classify returns 503 when the model file is missing.            [P1]
+
+---------------------------------------------------------------------
+APPENDIX A. COST ESTIMATE FIGURES (for the slide only; checked 24 Oct 2026)
+---------------------------------------------------------------------
+Pilot: one hostel cluster + one mess, 4 weeks, 2 staff phones, 1 dispatcher
+laptop, 1 vehicle. Indicative online prices, not quotations.
+  Software: Rs 0 (open-source tools)
+  Server: Rs 0 on an existing campus machine, or US$4-6/month basic cloud VM
+    (DigitalOcean Droplet price list)
+  Staff phones (2): Rs 0 with own phones (with consent), or about
+    Rs 10,000-14,000 for two entry-level Android phones (2026 listings,
+    about Rs 5,000-7,000 each)
+  Mobile data (2): Rs 0 on campus Wi-Fi, or up to Rs 378 per 28 days
+    (2 x Jio Rs 189 plan, 2 GB per 28 days)
+  Mess scale: Rs 0 if the mess has one, or about Rs 5,900-9,500 for a
+    100 kg platform scale (GeM and L&T SuFin listings)
+  Classifier: Rs 0 (free Colab/Kaggle GPU quota; CPU inference)
+  Staff time: about 1 hour training per person; seconds per tap; about
+    2 minutes per meal log (assumption, to be measured in the pilot)
+  Cameras: not costed (proposed only; dated quotations first)
+  Pilot total: Rs 0 to about Rs 23,500 one-time; US$4-6 plus Rs 0-378 per month
+Scaling: each extra hostel adds at most 2 phones + data; each extra mess at
+most 1 scale; software and one small server stay the same up to campus size.
+=====================================================================
+END OF SPEC
+=====================================================================
