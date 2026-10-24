@@ -3,6 +3,7 @@ import pytest
 
 from app import config
 from app.db import set_meta
+from app.routing.plan import plan_routes
 from app.scale_lab import run as scale_run
 
 METRIC_KEYS = {"km", "runtime_s", "feasible"}
@@ -27,8 +28,13 @@ def test_run_small_returns_both_instances(client, temp_cache):
     assert set(result) == {"generated_at", "synthetic", "instances"}
     assert result["synthetic"] is True
     campus, city = result["instances"]
-    assert (campus["name"], campus["bins"], campus["vehicles"]) == ("campus", 50, 2)
+    assert (campus["name"], campus["bins"]) == ("campus", 50)
     assert campus["source"] == "synthetic_fallback"            # test db is not seeded
+    # campus uses the recommended fleet size of the same stops (3 if none feasible)
+    fallback = scale_run._synthetic_stops(50, 42, 0.006, 0.007, "S")
+    recommended = plan_routes(fallback, fleet_sizes=config.FLEET_SIZES,
+                              fast=True)["recommended_fleet_size"]
+    assert campus["vehicles"] == (recommended or max(config.FLEET_SIZES))
     assert (city["name"], city["bins"], city["vehicles"]) == ("city", 200, 30)
     for inst in result["instances"]:
         assert set(inst) == {"name", "bins", "vehicles", "source", "three_stage",
@@ -59,3 +65,6 @@ def test_campus_uses_seeded_db_bins(conn, temp_cache):
     assert stops["D1-1"].demand_l == pytest.approx(120 * 0.50)       # no reading
     campus = scale_run.run_scale_lab(city_stops=50)["instances"][0]
     assert (campus["source"], campus["bins"]) == ("seeded_db", 3)
+    # food + general: k=1 leaves food unassigned, k=2 is the cheapest feasible size
+    assert campus["vehicles"] == 2
+    assert campus["three_stage"]["feasible"] and campus["nearest_neighbor"]["feasible"]
