@@ -192,7 +192,9 @@ export default function RiskMap() {
               <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-3)" }}>
                 <div>{selected.group_name} <StatusPill status={statusForBin(selected)} /></div>
                 <div>Current fill: <strong>{fmtPct(selected.current_fill_pct)}</strong></div>
-                <div>Predicted fill: <strong>{fmtPct(selected.predicted_fill_pct)}</strong></div>
+                <div>Predicted fill: <strong>{selected.predicted_fill_pct > 100
+                  ? "100% - would overflow"
+                  : fmtPct(selected.predicted_fill_pct)}</strong></div>
                 <div>P(overflow): <strong>{selected.p_overflow != null ? `${(selected.p_overflow * 100).toFixed(0)}%` : "no reading"}</strong></div>
                 <div style={{ fontSize: "0.875rem", color: "var(--color-muted)" }}>{selected.reason}</div>
                 <div style={{ display: "flex", gap: "var(--space-2)", flexWrap: "wrap" }}>
