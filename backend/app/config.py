@@ -16,6 +16,20 @@ DEMO_CACHE_DIR = DATA_DIR / "demo_cache"
 UPLOAD_DIR = DATA_DIR / "uploads"
 MODEL_DIR = DATA_DIR / "model"
 
+# Local Vite development is allowed by default. Production deployments set
+# CHAKRA_CORS_ORIGINS to the public URL of the static frontend, for example
+# "https://chakra-web.onrender.com". Keeping this as a function means tests
+# and deployment tooling can evaluate it without importing the ASGI app.
+DEFAULT_CORS_ORIGINS = ("http://localhost:5173", "http://127.0.0.1:5173")
+
+
+def cors_origins() -> list[str]:
+    """Return explicit browser origins allowed to call the API."""
+    configured = os.environ.get("CHAKRA_CORS_ORIGINS", "")
+    if not configured.strip():
+        return list(DEFAULT_CORS_ORIGINS)
+    return [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
+
 SEED = 42
 CAMPUS_CENTER = (29.8650, 77.8960)   # approximate; synthetic layout
 NODES = [
