@@ -158,22 +158,24 @@ export default function PlanTomorrow() {
         </Notice>
       )}
 
-      <Slider
-        label="Risk threshold tau"
-        min={assumptions.tau_min}
-        max={assumptions.tau_max}
-        step={0.05}
-        value={tau}
-        onChange={handleTauChange}
-        hint="Visit a bin if its chance of overflowing tomorrow is above tau. Overflowing, reported and no-reading bins are always visited."
-      />
-      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "-8px", marginBottom: "var(--space-3)" }}>
-        <span>← Careful – visit more bins</span>
-        <span>Saving – visit fewer bins →</span>
-      </div>
-      {tau < 0.5 && (
-        <Notice kind="info">Safety mode: tau below 0.5 visits more bins than the median-forecast rule.</Notice>
-      )}
+      <Card>
+        <Slider
+          label="Risk threshold tau"
+          min={assumptions.tau_min}
+          max={assumptions.tau_max}
+          step={0.05}
+          value={tau}
+          onChange={handleTauChange}
+          hint="Visit a bin if its chance of overflowing tomorrow is above tau. Overflowing, reported and no-reading bins are always visited."
+        />
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", color: "var(--color-muted)", marginTop: "-8px", marginBottom: tau < 0.5 ? "var(--space-3)" : 0 }}>
+          <span>← Careful – visit more bins</span>
+          <span>Saving – visit fewer bins →</span>
+        </div>
+        {tau < 0.5 && (
+          <Notice kind="info">Safety mode: tau below 0.5 visits more bins than the median-forecast rule.</Notice>
+        )}
+      </Card>
 
       {summary && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-2)", marginBottom: "var(--space-4)" }}>

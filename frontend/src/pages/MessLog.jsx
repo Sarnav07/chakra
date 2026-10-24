@@ -21,8 +21,9 @@ function mealByHour() {
 
 const LOG_COLUMNS = [
   { key: "date", label: "Date" },
+  { key: "mess_id", label: "Mess" },
   { key: "meal", label: "Meal" },
-  { key: "category", label: "Category" },
+  { key: "category", label: "Category", render: (v) => String(v).replace(/_/g, " ") },
   { key: "weight_kg", label: "kg" },
   { key: "weighed", label: "Weighed", render: (v) => (v ? "Yes" : "No") },
   { key: "source", label: "Source" },
@@ -101,7 +102,7 @@ export default function MessLog() {
 
   return (
     <>
-      <PageHeader title="Mess Log" badges={["implemented", "simulated"]} />
+      <PageHeader title="Mess log" badges={["implemented", "simulated"]} />
       {error && <Notice kind="error">{error}</Notice>}
 
       <Card title="New entry">
