@@ -1,78 +1,147 @@
-import { useEffect, useState } from "react";
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { getDashboard, getForecastEval } from "../api";
-import { Card, CHART, EmptyState, Loading, Notice, PageHeader, Stat } from "../ui";
+// OWNER: P3
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
+import {
+  LineChart, Line, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from "recharts";
+import {
+  PageHeader, Card, Stat, DataTable, Loading, EmptyState, Notice, Button, CHART,
+} from "../ui";
+import { getDashboard, getForecastEval, runForecasts } from "../api";
 
-function number(value, places = 1) {
-  return value == null ? "—" : Number(value).toFixed(places);
-}
+const fmt = (v, dp = 1) => (v == null ? "-" : Number(v).toFixed(dp));
+const fmtInt = (v) => (v == null ? "-" : String(v));
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
-  const [quality, setQuality] = useState(null);
+  const [evalData, setEvalData] = useState(null);
+  const [evalError, setEvalError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  useEffect(() => {
-    getDashboard().then(setData).catch((err) => setError(err.message));
-    getForecastEval().then(setQuality).catch(() => setQuality(null));
+  const [runningForecast, setRunningForecast] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const [dash, evalRes] = await Promise.allSettled([
+        getDashboard(),
+        getForecastEval(),
+      ]);
+      if (dash.status === "fulfilled") {
+        setData(dash.value);
+        setError(null);
+      } else {
+        setError(dash.reason?.message || "Failed to load dashboard");
+      }
+      if (evalRes.status === "fulfilled") {
+        setEvalData(evalRes.value);
+        setEvalError(null);
+      } else {
+        setEvalError(evalRes.reason?.message || "Forecast eval unavailable");
+      }
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  if (!data && !error) return <Loading text="Loading dashboard..." />;
-  const plan = data?.plan;
+  useEffect(() => { load(); }, [load]);
+
+  async function handleRunForecast() {
+    setRunningForecast(true);
+    try {
+      await runForecasts();
+      await load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRunningForecast(false);
+    }
+  }
+
+  if (loading) return <Loading text="Loading dashboard..." />;
+  if (error && !data) return <Notice kind="error">{error}</Notice>;
+
+  const { plan, forecast, fill_trend, pickups, reports, batches, mess } = data;
+
+  const mealColumns = [
+    { key: "meal", label: "Meal" },
+    { key: "avg_kg", label: "Avg kg/day" },
+  ];
+  const mealRows = mess?.by_meal_avg_kg
+    ? Object.entries(mess.by_meal_avg_kg).map(([meal, avg]) => ({
+        id: meal, meal, avg_kg: fmt(avg),
+      }))
+    : [];
+
   return (
     <>
-      <PageHeader title="Dashboard" subtitle="Campus collection at a glance"
-        badges={["implemented", "simulated"]} />
+      <PageHeader title="Dashboard" badges={["implemented", "simulated"]} />
       {error && <Notice kind="error">{error}</Notice>}
-      {data && (
-        <>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
-            <Stat label="Plan distance" value={number(plan?.km)} unit="km"
-              hint={plan ? `vs ${number(plan.baseline_km)} km nearest-neighbour baseline` : "Choose a plan first"} />
-            <Stat label="Simulated saving" value={number(plan?.saving_pct)} unit="%" />
-            <Stat label="Pickups today" value={data.pickups.today} />
-            <Stat label="Open reports" value={data.reports.open} />
-            <Stat label="Missed collections" value={data.reports.missed_collections} />
-            <Stat label="Pending handoff" value={number(data.batches.pending_handoff_l)} unit="L" />
-            <Stat label="Delivered to compost stop"
-              value={number(data.batches.delivered_to_compost_l)} unit="L" />
-          </div>
-          <Card title="Fill trend · last 14 days">
-            {data.fill_trend.length ? (
-              <div style={{ height: 280 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data.fill_trend}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
-                    <XAxis dataKey="date" fontSize={CHART.fontSize} />
-                    <YAxis fontSize={CHART.fontSize} />
-                    <Tooltip />
-                    <Line dataKey="avg_fill_pct" name="Average fill %" stroke={CHART.series[0]} />
-                    <Line dataKey="full_bins" name="Full readings" stroke={CHART.series[2]} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            ) : <EmptyState title="No fill readings yet" />}
-          </Card>
-          <Card title="Mess food waste">
-            <p>Last 7 days: <strong>{number(data.mess.last7_total_kg)} kg</strong></p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-              {Object.entries(data.mess.by_meal_avg_kg).map(([meal, kg]) => (
-                <Stat key={meal} label={meal} value={number(kg)} unit="kg average per entry" />
-              ))}
-            </div>
-          </Card>
-          <Card title="Forecast quality">
-            {quality ? (
-              <>
-                <p>Model MAE: <strong>{number(quality.mae_model, 2)}</strong> · Last-value baseline MAE:{" "}
-                  <strong>{number(quality.mae_baseline, 2)}</strong></p>
-                <p>Interval coverage: <strong>{number(quality.interval_coverage * 100)}%</strong></p>
-                <p>Time-split test on simulated history.</p>
-              </>
-            ) : <EmptyState title="Forecast evaluation unavailable" />}
-          </Card>
-          <p>Simulated scenario data; delivery to the compost stop does not mean compost was produced.</p>
-        </>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+        <Stat label="Plan km" value={fmt(plan?.km)} />
+        <Stat label="Baseline km" value={fmt(plan?.baseline_km)} />
+        <Stat label="Simulated saving" value={plan?.saving_pct != null ? fmt(plan.saving_pct) : "-"} unit="%" />
+        <Stat label="Pickups today" value={fmtInt(pickups?.today)} />
+        <Stat label="Open reports" value={fmtInt(reports?.open)} />
+        <Stat label="Missed collections" value={fmtInt(reports?.missed_collections)} />
+        <Stat label="Litres pending handoff" value={fmt(batches?.pending_handoff_l)} />
+        <Stat label="Litres delivered to compost stop" value={fmt(batches?.delivered_to_compost_l)} />
+      </div>
+
+      {!plan && (
+        <EmptyState title="No plan committed yet">
+          <Link to="/plan" style={{ color: "var(--color-primary)" }}>Go to Plan tomorrow</Link>
+        </EmptyState>
       )}
+
+      {!forecast && (
+        <EmptyState title="No forecast yet">
+          <Button variant="primary" disabled={runningForecast} onClick={handleRunForecast}>
+            {runningForecast ? "Running..." : "Run forecast"}
+          </Button>
+        </EmptyState>
+      )}
+
+      {fill_trend && fill_trend.length > 0 && (
+        <Card title="Fill trend (14 days)">
+          <div style={{ height: 280 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={fill_trend}>
+                <CartesianGrid stroke={CHART.grid} strokeDasharray="3 3" />
+                <XAxis dataKey="date" fontSize={CHART.fontSize} />
+                <YAxis yAxisId="left" fontSize={CHART.fontSize} unit="%" domain={[0, "auto"]} />
+                <YAxis yAxisId="right" orientation="right" fontSize={CHART.fontSize} allowDecimals={false} />
+                <Tooltip />
+                <Line yAxisId="left" type="monotone" dataKey="avg_fill_pct" name="Avg fill %" stroke={CHART.series[0]} dot={false} />
+                <Line yAxisId="right" type="monotone" dataKey="full_bins" name="Full bins" stroke={CHART.series[1]} dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      )}
+
+      <Card title="Mess leftovers">
+        <Stat label="Last 7 days total" value={fmt(mess?.last7_total_kg)} unit="kg" />
+        <DataTable columns={mealColumns} rows={mealRows} emptyText="No mess data" />
+      </Card>
+
+      <Card title="Forecast quality">
+        {evalError ? (
+          <EmptyState title={evalError} />
+        ) : evalData ? (
+          <>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "var(--space-3)" }}>
+              <Stat label="MAE (model)" value={fmt(evalData.mae_model, 2)} />
+              <Stat label="MAE (last-value baseline)" value={fmt(evalData.mae_baseline, 2)} />
+              <Stat label="Interval coverage" value={fmt(evalData.interval_coverage * 100, 1)} unit="%" />
+              <Stat label="Validation bins" value={fmtInt(evalData.n_val)} />
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--color-muted)", marginTop: "var(--space-2)" }}>
+              time-split test on simulated history
+            </p>
+          </>
+        ) : null}
+      </Card>
     </>
   );
 }
