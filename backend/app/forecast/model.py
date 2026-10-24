@@ -201,7 +201,10 @@ def predict_quantiles(models: dict[float, object], feature_rows: pd.DataFrame):
 def _history(conn):
     frames = frames_from_db(conn)
     increments = build_increments(frames['observations'], frames['pickups'])
-    scenario_date = date.fromisoformat(get_meta(conn, 'scenario_date'))
+    scenario_date_value = get_meta(conn, 'scenario_date')
+    if scenario_date_value is None:
+        raise ValueError('Database not seeded - run python -m app.seed')
+    scenario_date = date.fromisoformat(scenario_date_value)
     return frames, increments, scenario_date
 
 
