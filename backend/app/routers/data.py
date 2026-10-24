@@ -88,8 +88,14 @@ def create_observation(body: ObservationIn, conn: sqlite3.Connection = Depends(g
     return {"observation": dict(row)}
 
 
+def _require_seeded(conn) -> None:
+    if get_meta(conn, "scenario_date") is None:
+        raise HTTPException(404, "Database not seeded - run python -m app.seed")
+
+
 @router.post("/forecasts")
 def run_forecasts(conn: sqlite3.Connection = Depends(get_db)):
+    _require_seeded(conn)
     try:
         plan_date = date.fromisoformat(get_meta(conn, "plan_date") or "")
         forecasts = persist_forecasts(conn, forecast_bins(conn, plan_date))
@@ -124,6 +130,7 @@ def latest_forecasts(conn: sqlite3.Connection = Depends(get_db)):
 
 @router.get("/forecasts/eval")
 def forecast_eval(conn: sqlite3.Connection = Depends(get_db)):
+    _require_seeded(conn)
     try:
         return evaluate(conn)
     except ValueError as exc:
