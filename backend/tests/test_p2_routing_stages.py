@@ -150,3 +150,33 @@ def test_check_alternative_reports_violations():
     violations = check_alternative(broken, [s.bin_id for s in HAND_MADE], SETTINGS)
     assert any("appears 2 times" in v for v in violations)
     assert any("unassigned" in v for v in violations)
+
+
+def test_relocate_never_adds_km_and_keeps_every_stop():
+    from app.routing.feasibility import improve_relocate, route_metrics
+    general = [s for s in _random_stops() if s.stream == "general"]
+    vehicles = SETTINGS.vehicles[:2]
+    # deliberately bad split: alternate stops between the two vehicles
+    routes = [{"vehicle": v, "stream": "general", "stops": general[i::2][:12]}
+              for i, v in enumerate(vehicles)]
+    before = sum(route_metrics(r["vehicle"], "general", r["stops"], SETTINGS)["km"] for r in routes)
+    after_routes = improve_relocate(routes, SETTINGS)
+    after = sum(route_metrics(r["vehicle"], "general", r["stops"], SETTINGS)["km"]
+                for r in after_routes)
+    assert after <= before + 1e-9
+    assert sorted(s.bin_id for r in after_routes for s in r["stops"]) == \
+        sorted(s.bin_id for r in routes for s in r["stops"])
+    for r in after_routes:
+        metrics = route_metrics(r["vehicle"], "general", r["stops"], SETTINGS)
+        assert metrics["load_l"] <= CAPACITY[r["vehicle"]["vehicle_id"]] + 1e-6
+        assert metrics["minutes"] <= SETTINGS.shift_min
+    assert improve_relocate(routes, SETTINGS) == after_routes          # deterministic
+
+
+def test_small_stream_uses_one_vehicle_when_cheaper():
+    # 3 light general stops close together, fleet 3 (2 general vehicles): one
+    # route is cheaper than two (fixed cost per vehicle), so only one is used
+    stops = [_stop(f"G{i}", "general", 0.0003 * i, 0.0003 * i, 50.0) for i in range(3)]
+    alt = plan_routes(stops, fleet_sizes=(3,), fast=True)["alternatives"][0]
+    assert alt["feasible"]
+    assert len([r for r in alt["routes"] if r["stream"] == "general"]) == 1

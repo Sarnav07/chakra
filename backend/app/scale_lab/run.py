@@ -7,13 +7,13 @@ import time
 import numpy as np
 
 from app import config
-from app.config import (CAMPUS_CENTER, DEMO_CACHE_DIR, MIN_DEMAND_PCT, STALE_DEMAND_PCT)
+from app.config import CAMPUS_CENTER, DEMO_CACHE_DIR
 from app.db import get_conn, get_meta, now_iso
 from app.routing.plan import baseline_nearest_neighbor, plan_routes
 from app.routing.types import RoutingSettings, Stop
 
 CACHE_NAME = "scale_lab.json"
-CAMPUS_FLEET_SIZE = 2
+CAMPUS_FLEET_IF_NONE = max(config.FLEET_SIZES)   # campus fleet if no size is feasible
 SYNTHETIC_CAPACITY_L = 240
 CITY_HALF_SPAN_DEG = 0.045          # +/- 0.045 deg lat/lon, about 10 x 10 km
 CITY_VEHICLES = [{"vehicle_id": f"C{i:02d}", "capacity_l": 10000, "fixed_cost_rs": 800,
@@ -38,29 +38,33 @@ def _synthetic_stops(n, seed, half_lat, half_lon, prefix) -> list[Stop]:
 
 
 def _seeded_campus_stops() -> list[Stop] | None:
-    """All bins of the main database as stops, or None if it is not seeded.
-    Demand = capacity x max(latest fill, MIN_DEMAND_PCT) / 100; a bin with no
-    reading uses STALE_DEMAND_PCT (as SPEC 9)."""
+    """The bins CHAKRA would route tomorrow: decide() at DEFAULT_TAU on the main
+    database, demand_l from each decision (SPEC 9), exactly as POST /api/routes.
+    None if the database is not seeded or nothing is selected."""
+    from app.selection.select import decide
+
     if not config.DB_PATH.exists():
         return None
     conn = get_conn(config.DB_PATH)
     try:
         if not get_meta(conn, "scenario_date"):
             return None
-        rows = conn.execute(
-            "SELECT b.*, (SELECT o.fill_pct FROM fill_observations o WHERE o.bin_id = b.bin_id "
-            "ORDER BY o.obs_id DESC LIMIT 1) AS latest_fill FROM bins b ORDER BY b.bin_id"
-        ).fetchall()
-    except sqlite3.Error:
+        selected = [d for d in decide(conn, config.DEFAULT_TAU)["decisions"] if d["selected"]]
+        bins = {r["bin_id"]: r for r in conn.execute("SELECT * FROM bins")}
+    except (sqlite3.Error, ValueError, TypeError):   # partly seeded db -> synthetic fallback
         return None
     finally:
         conn.close()
-    stops = []
-    for r in rows:
-        pct = STALE_DEMAND_PCT if r["latest_fill"] is None else max(r["latest_fill"], MIN_DEMAND_PCT)
-        stops.append(Stop(bin_id=r["bin_id"], name=r["name"], lat=r["lat"], lon=r["lon"],
-                          stream=r["stream"], demand_l=r["capacity_l"] * pct / 100))
+    stops = [Stop(bin_id=d["bin_id"], name=bins[d["bin_id"]]["name"], lat=bins[d["bin_id"]]["lat"],
+                  lon=bins[d["bin_id"]]["lon"], stream=bins[d["bin_id"]]["stream"],
+                  demand_l=d["demand_l"]) for d in selected]
     return stops or None
+
+
+def _campus_fleet_size(stops, settings) -> int:
+    """Recommended fleet size over FLEET_SIZES (SPEC 10), or CAMPUS_FLEET_IF_NONE."""
+    planned = plan_routes(stops, fleet_sizes=config.FLEET_SIZES, fast=True, settings=settings)
+    return planned["recommended_fleet_size"] or CAMPUS_FLEET_IF_NONE
 
 
 def _measure(name, stops, fleet_size, settings, source) -> dict:
@@ -84,15 +88,17 @@ def _measure(name, stops, fleet_size, settings, source) -> dict:
 def run_scale_lab(city_stops: int = 2000) -> dict:
     """Run both instances, write DEMO_CACHE_DIR/scale_lab.json and return it."""
     campus = _seeded_campus_stops()
-    source = "seeded_db"
+    source = "seeded_db_selection"
     if campus is None:
         campus = _synthetic_stops(50, 42, 0.006, 0.007, "S")
         source = "synthetic_fallback"
     city = _synthetic_stops(city_stops, 7, CITY_HALF_SPAN_DEG, CITY_HALF_SPAN_DEG, "C")
     city_settings = RoutingSettings(vehicles=[dict(v) for v in CITY_VEHICLES], **CITY_SETTINGS)
+    campus_settings = RoutingSettings()
+    campus_k = _campus_fleet_size(campus, campus_settings)
 
     result = {"generated_at": now_iso(), "synthetic": True, "instances": [
-        _measure("campus", campus, CAMPUS_FLEET_SIZE, RoutingSettings(), source),
+        _measure("campus", campus, campus_k, campus_settings, source),
         _measure("city", city, len(CITY_VEHICLES), city_settings, "synthetic"),
     ]}
     path = _cache_path()

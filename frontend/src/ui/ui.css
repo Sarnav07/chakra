@@ -429,7 +429,8 @@
 .ck-notice--error { background: #fbf0f0; color: var(--color-danger); }
 .ck-page-header__title { font-size: 56px; line-height: 1; margin: 10px 0; }
 .ck-page-header__subtitle { font-size: 17px; color: var(--color-text-body); }
-@media(max-width:900px) {
+/* 10 links + logo + Reset fit one row only above ~1080px; below that use the menu */
+@media(max-width:1080px) {
   .ck-menu-toggle { display: block; }
   .ck-topbar__nav { display: none; position: absolute; top: 66px; left: 4%; right: 4%;
     flex-direction: column; align-items: stretch; padding: 16px; background: var(--color-surface-glass);
@@ -438,3 +439,12 @@
   .ck-topbar__nav--open { display: flex; }
 }
 @media(max-width:640px) { .ck-page-header__title { font-size: 40px; } }
+
+/* Readability on the video: page text outside glass gets a soft white halo;
+   empty and loading states sit on glass like cards */
+.page { text-shadow: 0 0 2px rgba(255,255,255,.9), 0 0 12px rgba(255,255,255,.95); }
+.ck-card,.ck-stat,.ck-datatable-wrap,.ck-map-legend,.leaflet-container,.ck-btn { text-shadow: none; }
+.ck-empty,.ck-loading { background: var(--color-surface-glass); border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-card); margin-bottom: var(--space-4);
+  backdrop-filter: blur(var(--glass-blur)); -webkit-backdrop-filter: blur(var(--glass-blur)); }
+@media(min-width:1081px) and (max-width:1280px) { .ck-topbar__nav { gap: 8px 16px; } }

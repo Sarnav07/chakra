@@ -37,7 +37,9 @@ def scenario(conn: sqlite3.Connection = Depends(get_db)):
 @router.post("/demo/reset")
 def demo_reset():
     try:
-        from app.seed import run_seed
+        from app.seed import run_seed, save_initial_forecasts
     except ImportError:
         raise HTTPException(503, "Seed not available yet - owner P1")
-    return {"ok": True, "summary": run_seed(seed=42)}
+    summary = run_seed(seed=42)
+    summary["forecasts"] = save_initial_forecasts()
+    return {"ok": True, "summary": summary}
