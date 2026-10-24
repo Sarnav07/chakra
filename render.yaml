@@ -7,6 +7,8 @@ services:
     startCommand: python -m uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /api/health
     envVars:
+      - key: CHAKRA_AUTO_SEED
+        value: "1"
       - key: MODEL_URL
         sync: false
       - key: GITHUB_TOKEN

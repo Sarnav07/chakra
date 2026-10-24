@@ -15,3 +15,14 @@ def test_cors_origins_parses_render_origins(monkeypatch):
         "https://chakra-web.onrender.com",
         "https://preview.example.com",
     ]
+
+
+def test_auto_seed_fills_an_empty_database(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    from app.main import app
+
+    monkeypatch.setattr(config, "DB_PATH", tmp_path / "hosted.db")
+    monkeypatch.setenv("CHAKRA_AUTO_SEED", "1")
+    with TestClient(app) as client:
+        assert client.get("/api/scenario").json()["bins_count"] == 50
+        assert client.get("/api/dashboard").json()["forecast"] is not None
