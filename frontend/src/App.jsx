@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Layout, EmptyState } from "./ui";
+import Home from "./pages/Home";
 import RiskMap from "./pages/RiskMap";
 import PlanTomorrow from "./pages/PlanTomorrow";
 import Worker from "./pages/Worker";
@@ -15,7 +16,7 @@ import BinReport from "./pages/BinReport";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/map" replace />} />
+      <Route path="/" element={<Layout><Home /></Layout>} />
       <Route path="/map" element={<Layout><RiskMap /></Layout>} />
       <Route path="/plan" element={<Layout><PlanTomorrow /></Layout>} />
       <Route path="/worker" element={<Layout><Worker /></Layout>} />
