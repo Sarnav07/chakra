@@ -2,9 +2,10 @@
 import pytest
 
 from app import config
-from app.db import set_meta
+from app.db import get_conn
 from app.routing.plan import plan_routes
 from app.scale_lab import run as scale_run
+from app.selection.select import decide
 
 METRIC_KEYS = {"km", "runtime_s", "feasible"}
 
@@ -49,22 +50,17 @@ def test_run_small_returns_both_instances(client, temp_cache):
     assert client.get("/api/scale-lab").json() == result
 
 
-def test_campus_uses_seeded_db_bins(conn, temp_cache):
-    conn.executemany("INSERT INTO bins VALUES (?, ?, ?, ?, ?, ?, ?, ?)", [
-        ("HA-1", "Hostel A bin 1", "hostel", "Hostel A", "general", 29.8661, 77.8942, 240),
-        ("M1-F1", "Mess 1 food bin 1", "mess_food", "Mess 1", "food", 29.8647, 77.8984, 120),
-        ("D1-1", "Dept 1 bin 1", "department", "Dept 1", "general", 29.8633, 77.8955, 120)])
-    conn.executemany("INSERT INTO fill_observations (bin_id, observed_at, fill_pct, source) "
-                     "VALUES (?, '2026-10-24T20:00:00+05:30', ?, 'simulated')",
-                     [("HA-1", 80.0), ("M1-F1", 5.0)])          # D1-1 has no reading
-    conn.commit()
-    set_meta(conn, "scenario_date", "2026-10-24")
-    stops = {s.bin_id: s for s in scale_run._seeded_campus_stops()}
-    assert stops["HA-1"].demand_l == pytest.approx(240 * 0.80)
-    assert stops["M1-F1"].demand_l == pytest.approx(120 * 0.10)      # max(5, 10) %
-    assert stops["D1-1"].demand_l == pytest.approx(120 * 0.50)       # no reading
+def test_campus_uses_tomorrows_selection(seeded_db_path, temp_cache, monkeypatch):
+    # campus = the bins decide() selects at the default tau, with the same demand
+    monkeypatch.setattr(config, "DB_PATH", seeded_db_path)
+    conn = get_conn(seeded_db_path)
+    selected = {d["bin_id"]: d["demand_l"]
+                for d in decide(conn, config.DEFAULT_TAU)["decisions"] if d["selected"]}
+    conn.close()
+    stops = {s.bin_id: s.demand_l for s in scale_run._seeded_campus_stops()}
+    assert stops.keys() == selected.keys()
+    for bin_id, demand in selected.items():
+        assert stops[bin_id] == pytest.approx(demand)
     campus = scale_run.run_scale_lab(city_stops=50)["instances"][0]
-    assert (campus["source"], campus["bins"]) == ("seeded_db", 3)
-    # food + general: k=1 leaves food unassigned, k=2 is the cheapest feasible size
-    assert campus["vehicles"] == 2
+    assert (campus["source"], campus["bins"]) == ("seeded_db_selection", len(selected))
     assert campus["three_stage"]["feasible"] and campus["nearest_neighbor"]["feasible"]
