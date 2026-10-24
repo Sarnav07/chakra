@@ -536,7 +536,6 @@ chakra/
 │   ├── src/ui/                  shared kit (Layout, Card, Stat, Slider, …)
 │   └── public/media/            background video and poster
 ├── ml/                          dataset prep, training, evaluation, Kaggle notebook
-├── design/mockup/               the approved visual mockup (reference only)
 ├── presentation/COST_SLIDE.txt  pilot cost slide text
 ├── SPEC.txt                     the full technical contract
 ├── DEMO_RUNSHEET.txt            demo-day commands and click path
