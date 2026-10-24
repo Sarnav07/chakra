@@ -1,28 +1,50 @@
-# STUB created by P2 - owner P3 replaces the bodies
-"""Pickups, compost arrival and batches (owner P3). Mock responses for now."""
+"""Pickups, compost arrival and batches (owner P3)."""
+import sqlite3
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
-from app import mock_data
+from app.db import get_db
+from app.pickups.service import (
+    BadRequest,
+    Conflict,
+    NotFound,
+    arrive_compost,
+    confirm_pickup,
+    list_batches,
+)
 from app.schemas import CompostIn, PickupIn
 
 router = APIRouter(tags=["pickups"])
 
 
 @router.post("/pickups")
-def confirm_pickup(body: PickupIn):
-    result = mock_data.mock_pickup(body.route_id, body.bin_id, body.level, body.staff_note)
-    if result is None:
-        raise HTTPException(400, "Bin is not on this route")
-    return result
+def do_confirm_pickup(body: PickupIn, conn: sqlite3.Connection = Depends(get_db)):
+    try:
+        return confirm_pickup(conn, body.route_id, body.bin_id, body.level, body.staff_note)
+    except NotFound as exc:
+        raise HTTPException(404, str(exc)) from None
+    except BadRequest as exc:
+        raise HTTPException(400, str(exc)) from None
+    except Conflict as exc:
+        raise HTTPException(409, str(exc)) from None
 
 
 @router.post("/pickups/arrive-compost")
-def arrive_compost(body: CompostIn):
-    return mock_data.mock_arrive_compost(body.route_id)
+def do_arrive_compost(body: CompostIn, conn: sqlite3.Connection = Depends(get_db)):
+    try:
+        return arrive_compost(conn, body.route_id)
+    except NotFound as exc:
+        raise HTTPException(404, str(exc)) from None
+    except BadRequest as exc:
+        raise HTTPException(400, str(exc)) from None
+    except Conflict as exc:
+        raise HTTPException(409, str(exc)) from None
 
 
 @router.get("/batches")
-def list_batches(status: Literal["pending_handoff", "delivered_to_compost", "all"] = "all"):
-    return mock_data.mock_batches(status)
+def do_list_batches(
+    status: Literal["pending_handoff", "delivered_to_compost", "all"] = "all",
+    conn: sqlite3.Connection = Depends(get_db),
+):
+    return list_batches(conn, status)
