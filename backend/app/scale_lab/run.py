@@ -13,7 +13,7 @@ from app.routing.plan import baseline_nearest_neighbor, plan_routes
 from app.routing.types import RoutingSettings, Stop
 
 CACHE_NAME = "scale_lab.json"
-CAMPUS_FLEET_SIZE = 2
+CAMPUS_FLEET_IF_NONE = max(config.FLEET_SIZES)   # campus fleet if no size is feasible
 SYNTHETIC_CAPACITY_L = 240
 CITY_HALF_SPAN_DEG = 0.045          # +/- 0.045 deg lat/lon, about 10 x 10 km
 CITY_VEHICLES = [{"vehicle_id": f"C{i:02d}", "capacity_l": 10000, "fixed_cost_rs": 800,
@@ -63,6 +63,12 @@ def _seeded_campus_stops() -> list[Stop] | None:
     return stops or None
 
 
+def _campus_fleet_size(stops, settings) -> int:
+    """Recommended fleet size over FLEET_SIZES (SPEC 10), or CAMPUS_FLEET_IF_NONE."""
+    planned = plan_routes(stops, fleet_sizes=config.FLEET_SIZES, fast=True, settings=settings)
+    return planned["recommended_fleet_size"] or CAMPUS_FLEET_IF_NONE
+
+
 def _measure(name, stops, fleet_size, settings, source) -> dict:
     """Time plan_routes(fast=True) and the nearest-neighbour baseline on the same stops."""
     t0 = time.perf_counter()
@@ -90,9 +96,11 @@ def run_scale_lab(city_stops: int = 2000) -> dict:
         source = "synthetic_fallback"
     city = _synthetic_stops(city_stops, 7, CITY_HALF_SPAN_DEG, CITY_HALF_SPAN_DEG, "C")
     city_settings = RoutingSettings(vehicles=[dict(v) for v in CITY_VEHICLES], **CITY_SETTINGS)
+    campus_settings = RoutingSettings()
+    campus_k = _campus_fleet_size(campus, campus_settings)
 
     result = {"generated_at": now_iso(), "synthetic": True, "instances": [
-        _measure("campus", campus, CAMPUS_FLEET_SIZE, RoutingSettings(), source),
+        _measure("campus", campus, campus_k, campus_settings, source),
         _measure("city", city, len(CITY_VEHICLES), city_settings, "synthetic"),
     ]}
     path = _cache_path()
