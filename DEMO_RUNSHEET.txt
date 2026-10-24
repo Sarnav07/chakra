@@ -33,7 +33,9 @@ All scenario data is SYNTHETIC. Savings are "simulated savings".
      /bin/HA-1/report  Phone report page for bin HA-1 (not in nav)
 
 3. BEFORE PRESENTING
-   Press "Reset demo" in the top bar (= POST /api/demo/reset).
+   Reset the demo data (there is no button in the app any more), in a
+   terminal on the laptop:
+     curl.exe -X POST http://127.0.0.1:8000/api/demo/reset
    This rebuilds the demo database; the twin and scale lab caches stay.
 
 4. DEMO PATH
