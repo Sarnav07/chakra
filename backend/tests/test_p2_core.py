@@ -30,10 +30,11 @@ SPEC_ENDPOINTS = {
 GET_PATHS = {
     "/api/health": {200},
     "/api/scenario": {200, 404},
-    "/api/bins": {200},
+    # empty test database: real P1 endpoints answer 404 "Database not seeded" (SPEC 15)
+    "/api/bins": {200, 404},
     "/api/bins/HA-1/history": {200, 404},
     "/api/forecasts/latest": {200, 404},
-    "/api/forecasts/eval": {200},
+    "/api/forecasts/eval": {200, 404},
     "/api/twin": {200, 404},
     "/api/classify/status": {200},
     "/api/routes/P-2026-10-25-abc123": {200, 404},
@@ -101,7 +102,8 @@ def test_request_validation(client):
     # empty test database: HA-1 does not exist -> 404 unknown bin
     assert client.post("/api/reports", data={"bin_id": "HA-1", "kind": "overflow",
                                              "reporter_role": "qr"}).status_code == 404
-    assert client.post("/api/classify", data={"bin_id": "HA-1"}).status_code == 503
+    # no photo: 400 bad file, or 503 if the model is missing (SPEC 15)
+    assert client.post("/api/classify", data={"bin_id": "HA-1"}).status_code in {400, 503}
 
 
 def test_reports_service_lifecycle(conn):
