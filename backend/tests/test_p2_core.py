@@ -107,7 +107,7 @@ def test_request_validation(client):
 
 
 def test_reports_service_lifecycle(conn):
-    conn.execute("INSERT INTO bins VALUES ('HA-1', 'Hostel A bin 1', 'hostel', 'Hostel A', "
+    conn.execute("INSERT INTO bins VALUES ('HA-1', 'Rajendra Bhawan bin 1', 'hostel', 'Rajendra Bhawan', "
                  "'general', 29.866, 77.894, 240)")
     conn.execute("INSERT INTO overflow_reports (bin_id, kind, reported_at, updated_at, "
                  "reporter_role, status, verified) VALUES ('HA-1', 'overflow', "

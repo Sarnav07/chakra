@@ -424,7 +424,7 @@ CREATE TABLE IF NOT EXISTS item_checks (
 
 CREATE TABLE IF NOT EXISTS mess_waste_logs (
   log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  mess_id TEXT NOT NULL,                  -- e.g. 'Mess 1' (= bins.group_name)
+  mess_id TEXT NOT NULL,                  -- e.g. 'Jawahar Bhawan Mess' (= bins.group_name)
   date TEXT NOT NULL,
   meal TEXT NOT NULL CHECK (meal IN ('breakfast','lunch','snacks','dinner')),
   category TEXT NOT NULL CHECK (category IN ('plate','kitchen_prep','unserved')),
@@ -443,19 +443,24 @@ now_iso() -> current time ISO string in TZ.
 8. SYNTHETIC SCENARIO AND SIMULATOR RULES  (P1: app/sim/*)
 ---------------------------------------------------------------------
 Layout (50 bins), defined in app/sim/scenario.py:
-  Hostels "Hostel A".."Hostel F": 5 bins each, ids HA-1..HA-5 ... HF-5,
-    group_type hostel, stream general, capacity 240 L,
-    name "Hostel A bin 1".
-  Messes "Mess 1".."Mess 3": per mess 2 general bins M1-G1, M1-G2
-    (group_type mess, 660 L, name "Mess 1 general bin 1") and 2 food bins
-    M1-F1, M1-F2 (group_type mess_food, stream food, 120 L,
-    name "Mess 1 food bin 1").
-  Departments "Dept 1".."Dept 4": 2 bins each, D1-1, D1-2 ...,
-    group_type department, 120 L, name "Dept 1 bin 1".
+  Group names are real IIT Roorkee places; ids keep the old codes.
+  Hostels (ids HA..HF): Rajendra, Rajiv, Radhakrishnan, Govind, Kasturba,
+    Sarojini Bhawan: 5 bins each, HA-1..HA-5 ... HF-5, group_type hostel,
+    stream general, capacity 240 L, name "Rajendra Bhawan bin 1".
+  Messes (ids M1..M3): "Jawahar Bhawan Mess", "Cautley & Ganga Bhawan
+    Mess", "Ravindra Bhawan Mess": per mess 2 general bins M1-G1, M1-G2
+    (group_type mess, 660 L, name "Jawahar Bhawan Mess general bin 1") and
+    2 food bins M1-F1, M1-F2 (group_type mess_food, stream food, 120 L,
+    name "Jawahar Bhawan Mess food bin 1").
+  Departments (ids D1..D4): "Civil Engineering Dept", "Electrical
+    Engineering Dept", "Mechanical & Industrial Engg Dept", "Computer
+    Science & Engg Dept": 2 bins each, D1-1, D1-2 ..., group_type
+    department, 120 L, name "Civil Engineering Dept bin 1".
   Total 30 + 6 + 6 + 8 = 50.
   Positions (rng = numpy.random.default_rng(SEED)): each group centre is
-  uniform within CAMPUS_CENTER +/- (0.006 lat, 0.007 lon); each bin is its
-  group centre +/- uniform 0.0005 in lat and lon. Positions are synthetic.
+  the building's position in OpenStreetMap (scenario.py); each bin is its
+  group centre +/- uniform 0.0005 in lat and lon. Bin positions, fills and
+  history are synthetic.
   Optional override: if backend/data/real_bins.csv exists (columns:
   bin_id,name,lat,lon) its values replace those bins' name/lat/lon.
 
@@ -644,7 +649,7 @@ Pickups (P3):
   must have stream 'food' (else 400) and all its stops confirmed (else 409).
   Then its food batches change to status 'delivered_to_compost'.
   CHAKRA records delivery only; it never reports compost produced.
-Mess logs (P3): mess_id must be an existing mess group_name ("Mess 1".."Mess 3"),
+Mess logs (P3): mess_id must be an existing mess group_name (e.g. "Jawahar Bhawan Mess"),
   date defaults to today (UTC+05:30), weight_kg in (0, 500], source 'staff'.
 
 ---------------------------------------------------------------------

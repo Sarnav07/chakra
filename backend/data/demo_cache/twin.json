@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T15:04:21+05:30",
+  "generated_at": "2026-10-24T15:14:14+05:30",
   "synthetic": true,
   "days": 30,
   "seeds": [
@@ -12,23 +12,23 @@
       "policy": "A_fixed",
       "tau": null,
       "mean": {
-        "km": 286.84330863872515,
-        "route_minutes": 5647.3732345549,
-        "cost_rs": 52508.78637033136,
+        "km": 263.0001769363292,
+        "route_minutes": 5552.0007077453165,
+        "cost_rs": 52222.668789902615,
         "overflow_events": 0.0,
         "pickups": 1500.0
       },
       "min": {
-        "km": 286.13539543316483,
-        "route_minutes": 5644.541581732659,
-        "cost_rs": 52233.62474519797,
+        "km": 262.2132486260603,
+        "route_minutes": 5548.852994504241,
+        "cost_rs": 51946.558983512725,
         "overflow_events": 0,
         "pickups": 1500
       },
       "max": {
-        "km": 287.3770909207066,
-        "route_minutes": 5649.508363682826,
-        "cost_rs": 53044.20927474764,
+        "km": 264.07519851928885,
+        "route_minutes": 5556.300794077155,
+        "cost_rs": 52768.90238223146,
         "overflow_events": 0,
         "pickups": 1500
       }
@@ -37,50 +37,50 @@
       "policy": "B_rule70",
       "tau": null,
       "mean": {
-        "km": 208.59636212497244,
-        "route_minutes": 2089.3854484998897,
-        "cost_rs": 54236.489678833,
-        "overflow_events": 35.333333333333336,
-        "pickups": 418.3333333333333
+        "km": 183.31165419027184,
+        "route_minutes": 1985.2466167610874,
+        "cost_rs": 51533.073183616594,
+        "overflow_events": 36.333333333333336,
+        "pickups": 417.3333333333333
       },
       "min": {
-        "km": 205.27727751283675,
-        "route_minutes": 2066.1091100513468,
-        "cost_rs": 52863.32733015404,
+        "km": 173.05534891722945,
+        "route_minutes": 1925.2213956689177,
+        "cost_rs": 50076.664187006754,
         "overflow_events": 32,
-        "pickups": 413
+        "pickups": 411
       },
       "max": {
-        "km": 211.213306891312,
-        "route_minutes": 2125.853227565248,
-        "cost_rs": 56134.55968269575,
-        "overflow_events": 39,
-        "pickups": 427
+        "km": 193.22639417016774,
+        "route_minutes": 2050.905576680671,
+        "cost_rs": 53518.71673004201,
+        "overflow_events": 41,
+        "pickups": 426
       }
     },
     {
       "policy": "C_chakra",
       "tau": 0.5,
       "mean": {
-        "km": 205.50552005405237,
-        "route_minutes": 2006.0220802162094,
-        "cost_rs": 54199.399573981966,
-        "overflow_events": 58.666666666666664,
-        "pickups": 394.6666666666667
+        "km": 180.25310274633645,
+        "route_minutes": 1900.012410985346,
+        "cost_rs": 52029.7038996227,
+        "overflow_events": 61.0,
+        "pickups": 393.0
       },
       "min": {
-        "km": 200.1208229059708,
-        "route_minutes": 1967.4832916238834,
-        "cost_rs": 51201.44987487165,
-        "overflow_events": 53,
+        "km": 174.0002506045411,
+        "route_minutes": 1872.0010024181643,
+        "cost_rs": 50888.00300725449,
+        "overflow_events": 58,
         "pickups": 389
       },
       "max": {
-        "km": 214.08455917131022,
-        "route_minutes": 2056.3382366852406,
-        "cost_rs": 57769.01471005572,
-        "overflow_events": 63,
-        "pickups": 400
+        "km": 189.88823002770505,
+        "route_minutes": 1953.5529201108202,
+        "cost_rs": 54278.65876033246,
+        "overflow_events": 64,
+        "pickups": 398
       }
     }
   ],
@@ -88,217 +88,217 @@
     {
       "tau": 0.1,
       "mean": {
-        "km": 205.69161764140838,
-        "route_minutes": 2158.7664705656334,
-        "cost_rs": 55534.96607836357,
-        "overflow_events": 18.666666666666668,
-        "pickups": 445.3333333333333
+        "km": 191.30582080513128,
+        "route_minutes": 2096.223283220525,
+        "cost_rs": 52429.00318299491,
+        "overflow_events": 18.0,
+        "pickups": 443.6666666666667
       },
       "min": {
-        "km": 200.9274203187946,
-        "route_minutes": 2129.7096812751784,
-        "cost_rs": 53611.12904382554,
+        "km": 186.51633701652744,
+        "route_minutes": 2078.06534806611,
+        "cost_rs": 48638.196044198325,
         "overflow_events": 12,
-        "pickups": 442
+        "pickups": 440
       },
       "max": {
-        "km": 209.44920988246102,
-        "route_minutes": 2187.796839529844,
-        "cost_rs": 57680.37867267564,
-        "overflow_events": 25,
-        "pickups": 450
+        "km": 199.78576201441004,
+        "route_minutes": 2119.14304805764,
+        "cost_rs": 55997.42914417292,
+        "overflow_events": 23,
+        "pickups": 447
       }
     },
     {
       "tau": 0.2,
       "mean": {
-        "km": 211.24154061719756,
-        "route_minutes": 2129.9661624687906,
-        "cost_rs": 57468.2318207397,
-        "overflow_events": 26.0,
+        "km": 186.13168145703102,
+        "route_minutes": 2029.526725828124,
+        "cost_rs": 53433.58017748437,
+        "overflow_events": 23.666666666666668,
         "pickups": 428.3333333333333
       },
       "min": {
-        "km": 204.5548920663576,
-        "route_minutes": 2104.7617894639275,
-        "cost_rs": 55343.28536839178,
-        "overflow_events": 17,
+        "km": 178.53802657718856,
+        "route_minutes": 1971.1521063087544,
+        "cost_rs": 47018.80064828093,
+        "overflow_events": 15,
         "pickups": 419
       },
       "max": {
-        "km": 217.2292824192533,
-        "route_minutes": 2167.9171296770132,
-        "cost_rs": 59406.75138903104,
-        "overflow_events": 33,
-        "pickups": 433
+        "km": 194.95696377049342,
+        "route_minutes": 2081.8278550819737,
+        "cost_rs": 59139.48356524592,
+        "overflow_events": 30,
+        "pickups": 434
       }
     },
     {
       "tau": 0.3,
       "mean": {
-        "km": 212.09848468827897,
-        "route_minutes": 2094.393938753116,
-        "cost_rs": 56945.18181625935,
+        "km": 184.08874711961712,
+        "route_minutes": 1982.3549884784686,
+        "cost_rs": 52875.73163210207,
         "overflow_events": 32.666666666666664,
         "pickups": 415.3333333333333
       },
       "min": {
-        "km": 206.7420569540755,
-        "route_minutes": 2064.8376495223633,
-        "cost_rs": 53713.51294856709,
-        "overflow_events": 24,
+        "km": 170.89631839203054,
+        "route_minutes": 1928.5852735681221,
+        "cost_rs": 43650.75582070437,
+        "overflow_events": 23,
         "pickups": 409
       },
       "max": {
-        "km": 220.09398473017058,
-        "route_minutes": 2152.3759389206825,
-        "cost_rs": 60241.12781676205,
-        "overflow_events": 39,
-        "pickups": 424
+        "km": 200.0688149040655,
+        "route_minutes": 2066.2752596162622,
+        "cost_rs": 60800.82577884878,
+        "overflow_events": 41,
+        "pickups": 422
       }
     },
     {
       "tau": 0.4,
       "mean": {
-        "km": 207.5632896702859,
-        "route_minutes": 2042.2531586811438,
-        "cost_rs": 54490.75947604343,
-        "overflow_events": 45.333333333333336,
-        "pickups": 404.0
+        "km": 184.8983944921766,
+        "route_minutes": 1947.5935779687063,
+        "cost_rs": 53685.44740057279,
+        "overflow_events": 45.0,
+        "pickups": 402.6666666666667
       },
       "min": {
-        "km": 202.38407196686765,
-        "route_minutes": 2021.5362878674707,
-        "cost_rs": 52828.608863602414,
-        "overflow_events": 36,
-        "pickups": 401
+        "km": 178.66942067449747,
+        "route_minutes": 1929.67768269799,
+        "cost_rs": 50944.03304809397,
+        "overflow_events": 35,
+        "pickups": 399
       },
       "max": {
-        "km": 212.23605428206506,
-        "route_minutes": 2069.9442171282603,
-        "cost_rs": 55346.83265138478,
-        "overflow_events": 54,
-        "pickups": 407
+        "km": 191.76921085540243,
+        "route_minutes": 1979.0768434216097,
+        "cost_rs": 55811.07862335956,
+        "overflow_events": 56,
+        "pickups": 405
       }
     },
     {
       "tau": 0.5,
       "mean": {
-        "km": 205.50552005405237,
-        "route_minutes": 2006.0220802162094,
-        "cost_rs": 54199.399573981966,
-        "overflow_events": 58.666666666666664,
-        "pickups": 394.6666666666667
+        "km": 180.25310274633645,
+        "route_minutes": 1900.012410985346,
+        "cost_rs": 52029.7038996227,
+        "overflow_events": 61.0,
+        "pickups": 393.0
       },
       "min": {
-        "km": 200.1208229059708,
-        "route_minutes": 1967.4832916238834,
-        "cost_rs": 51201.44987487165,
-        "overflow_events": 53,
+        "km": 174.0002506045411,
+        "route_minutes": 1872.0010024181643,
+        "cost_rs": 50888.00300725449,
+        "overflow_events": 58,
         "pickups": 389
       },
       "max": {
-        "km": 214.08455917131022,
-        "route_minutes": 2056.3382366852406,
-        "cost_rs": 57769.01471005572,
-        "overflow_events": 63,
-        "pickups": 400
+        "km": 189.88823002770505,
+        "route_minutes": 1953.5529201108202,
+        "cost_rs": 54278.65876033246,
+        "overflow_events": 64,
+        "pickups": 398
       }
     },
     {
       "tau": 0.6,
       "mean": {
-        "km": 205.6053685164737,
-        "route_minutes": 1981.4214740658947,
-        "cost_rs": 54200.597755531024,
+        "km": 191.53262909018494,
+        "route_minutes": 1921.1305163607396,
+        "cost_rs": 55098.39154908222,
         "overflow_events": 76.66666666666667,
-        "pickups": 386.3333333333333
+        "pickups": 385.0
       },
       "min": {
-        "km": 194.70305184615785,
-        "route_minutes": 1921.8122073846314,
-        "cost_rs": 49536.436622153895,
-        "overflow_events": 76,
-        "pickups": 381
+        "km": 190.05820237521442,
+        "route_minutes": 1900.2328095008577,
+        "cost_rs": 52680.698428502576,
+        "overflow_events": 71,
+        "pickups": 380
       },
       "max": {
-        "km": 217.27877336513296,
-        "route_minutes": 2054.1150934605316,
-        "cost_rs": 59407.345280381596,
-        "overflow_events": 78,
-        "pickups": 395
+        "km": 192.54309501096427,
+        "route_minutes": 1946.9863595375045,
+        "cost_rs": 58303.95907861251,
+        "overflow_events": 81,
+        "pickups": 393
       }
     },
     {
       "tau": 0.7,
       "mean": {
-        "km": 207.26671471872706,
-        "route_minutes": 1961.0668588749086,
-        "cost_rs": 56620.53390995806,
-        "overflow_events": 98.33333333333333,
-        "pickups": 377.3333333333333
+        "km": 190.3954062931007,
+        "route_minutes": 1883.5816251724027,
+        "cost_rs": 54818.078208850544,
+        "overflow_events": 99.66666666666667,
+        "pickups": 374.0
       },
       "min": {
-        "km": 205.56014054806016,
-        "route_minutes": 1932.2405621922408,
-        "cost_rs": 55266.72168657672,
+        "km": 189.29518875318723,
+        "route_minutes": 1858.5155002506053,
+        "cost_rs": 52672.546500751814,
         "overflow_events": 96,
-        "pickups": 370
+        "pickups": 367
       },
       "max": {
-        "km": 210.4148774513018,
-        "route_minutes": 2002.6595098052073,
-        "cost_rs": 59324.978529415625,
-        "overflow_events": 101,
-        "pickups": 387
+        "km": 192.51215506346352,
+        "route_minutes": 1906.180755012749,
+        "cost_rs": 56671.542265038246,
+        "overflow_events": 102,
+        "pickups": 383
       }
     },
     {
       "tau": 0.8,
       "mean": {
-        "km": 199.7342647474369,
-        "route_minutes": 1894.9370589897474,
-        "cost_rs": 55730.144510302576,
-        "overflow_events": 124.33333333333333,
-        "pickups": 365.3333333333333
+        "km": 189.33373215679367,
+        "route_minutes": 1848.3349286271748,
+        "cost_rs": 54538.67145254819,
+        "overflow_events": 129.0,
+        "pickups": 363.6666666666667
       },
       "min": {
-        "km": 189.98012327709483,
-        "route_minutes": 1827.9204931083793,
-        "cost_rs": 52679.76147932514,
-        "overflow_events": 119,
-        "pickups": 356
+        "km": 181.48635332814047,
+        "route_minutes": 1787.9454133125619,
+        "cost_rs": 52577.836239937686,
+        "overflow_events": 125,
+        "pickups": 354
       },
       "max": {
-        "km": 207.73461835038123,
-        "route_minutes": 1928.9384734015248,
-        "cost_rs": 57692.81542020458,
-        "overflow_events": 130,
-        "pickups": 374
+        "km": 196.37564417520161,
+        "route_minutes": 1879.5567958681559,
+        "cost_rs": 56756.50773010242,
+        "overflow_events": 136,
+        "pickups": 373
       }
     },
     {
       "tau": 0.9,
       "mean": {
-        "km": 196.10749133417184,
-        "route_minutes": 1837.4299653366872,
-        "cost_rs": 53286.62322934339,
-        "overflow_events": 168.0,
-        "pickups": 351.0
+        "km": 184.25955753352073,
+        "route_minutes": 1789.0382301340826,
+        "cost_rs": 52077.78135706892,
+        "overflow_events": 166.0,
+        "pickups": 350.6666666666667
       },
       "min": {
-        "km": 189.8176042527731,
-        "route_minutes": 1789.4321573470875,
-        "cost_rs": 51899.296472041264,
-        "overflow_events": 161,
-        "pickups": 341
+        "km": 176.97151118531147,
+        "route_minutes": 1752.057523176066,
+        "cost_rs": 48523.65813422374,
+        "overflow_events": 156,
+        "pickups": 338
       },
       "max": {
-        "km": 206.8968304129706,
-        "route_minutes": 1913.5873216518823,
-        "cost_rs": 55282.76196495564,
-        "overflow_events": 174,
-        "pickups": 362
+        "km": 191.2927806212342,
+        "route_minutes": 1845.1711224849366,
+        "cost_rs": 54295.51336745481,
+        "overflow_events": 171,
+        "pickups": 360
       }
     }
   ],
@@ -306,38 +306,38 @@
     {
       "detour_factor": 1.2,
       "policy": "A_fixed",
-      "km": 265.27116084988296,
+      "km": 242.04299873174796,
       "overflow_events": 0
     },
     {
       "detour_factor": 1.2,
       "policy": "C_chakra",
-      "km": 184.72691345166535,
-      "overflow_events": 60
+      "km": 163.26500019806264,
+      "overflow_events": 61
     },
     {
       "detour_factor": 1.3,
       "policy": "A_fixed",
-      "km": 287.3770909207066,
+      "km": 262.2132486260603,
       "overflow_events": 0
     },
     {
       "detour_factor": 1.3,
       "policy": "C_chakra",
-      "km": 200.1208229059708,
-      "overflow_events": 60
+      "km": 176.8708276067632,
+      "overflow_events": 61
     },
     {
       "detour_factor": 1.5,
       "policy": "A_fixed",
-      "km": 331.5889510623537,
+      "km": 302.55374841468495,
       "overflow_events": 0
     },
     {
       "detour_factor": 1.5,
       "policy": "C_chakra",
-      "km": 230.9086418145817,
-      "overflow_events": 60
+      "km": 204.08172416164987,
+      "overflow_events": 61
     }
   ],
   "assumptions": {

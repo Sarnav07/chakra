@@ -18,31 +18,16 @@ def build_layout(seed: int = 42) -> list[dict]:
     """Build the 50-bin synthetic campus and apply an optional position file."""
     rng = np.random.default_rng(seed)
     layout = []
-    group_centres: dict[tuple[str, str], tuple[float, float]] = {}
-    for group_type, group_name, count, capacity_l in scenario.GROUPS:
-        key = (group_type, group_name)
-        if key not in group_centres:
-            group_centres[key] = (
-                float(rng.uniform(config.CAMPUS_CENTER[0] - 0.006, config.CAMPUS_CENTER[0] + 0.006)),
-                float(rng.uniform(config.CAMPUS_CENTER[1] - 0.007, config.CAMPUS_CENTER[1] + 0.007)),
-            )
-        centre = group_centres[key]
+    for group_type, group_name, prefix, count, capacity_l, centre in scenario.GROUPS:
         for index in range(1, count + 1):
-            if group_type == 'hostel':
-                letter = group_name[-1]
-                bin_id = f'H{letter}-{index}'
-                name = f'{group_name} bin {index}'
-            elif group_type == 'mess':
-                mess_number = group_name.split()[-1]
-                bin_id = f'M{mess_number}-G{index}'
+            if group_type == 'mess':
+                bin_id = f'{prefix}-G{index}'
                 name = f'{group_name} general bin {index}'
             elif group_type == 'mess_food':
-                mess_number = group_name.split()[-1]
-                bin_id = f'M{mess_number}-F{index}'
+                bin_id = f'{prefix}-F{index}'
                 name = f'{group_name} food bin {index}'
             else:
-                department_number = group_name.split()[-1]
-                bin_id = f'D{department_number}-{index}'
+                bin_id = f'{prefix}-{index}'
                 name = f'{group_name} bin {index}'
             layout.append(
                 {

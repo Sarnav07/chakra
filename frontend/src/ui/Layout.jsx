@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { resetDemo } from "../api";
-import Button from "./Button";
 import Backdrop from "./Backdrop";
 import LeafLogo from "./LeafLogo";
 
@@ -26,16 +24,6 @@ export default function Layout({ children }) {
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, []);
 
-  async function handleReset() {
-    if (!window.confirm("Reset all demo data?")) return;
-    try {
-      await resetDemo();
-      window.location.reload();
-    } catch (err) {
-      alert(err.message);
-    }
-  }
-
   return (
     <>
       <Backdrop />
@@ -55,10 +43,8 @@ export default function Layout({ children }) {
                 {link.label}
               </NavLink>
             ))}
-            <Button variant="secondary" size="sm" onClick={handleReset}>Reset demo</Button>
           </nav>
         </header>
-        <div className="ck-simulated"><span />Data shown is SIMULATED for the prototype</div>
         <main id="main" className="page fade-up">{children}</main>
       </div>
     </>

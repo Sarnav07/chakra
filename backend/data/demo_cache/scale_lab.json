@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-10-24T15:04:22+05:30",
+  "generated_at": "2026-10-24T15:14:15+05:30",
   "synthetic": true,
   "instances": [
     {
       "name": "campus",
-      "bins": 17,
+      "bins": 16,
       "vehicles": 2,
       "source": "seeded_db_selection",
       "three_stage": {
-        "km": 7.724,
+        "km": 7.1,
         "runtime_s": 0.006,
         "feasible": true
       },
       "nearest_neighbor": {
-        "km": 7.753,
+        "km": 7.439,
         "runtime_s": 0.0,
         "feasible": true
       }
@@ -25,12 +25,12 @@
       "source": "synthetic",
       "three_stage": {
         "km": 689.312,
-        "runtime_s": 9.495,
+        "runtime_s": 9.521,
         "feasible": true
       },
       "nearest_neighbor": {
         "km": 704.611,
-        "runtime_s": 4.31,
+        "runtime_s": 4.493,
         "feasible": true
       }
     }

@@ -3,7 +3,7 @@ import pytest
 
 
 VALID_LOG = {
-    "mess_id": "Mess 1",
+    "mess_id": "Jawahar Bhawan Mess",
     "meal": "lunch",
     "category": "plate",
     "weight_kg": 12.5,
@@ -17,7 +17,7 @@ def test_create_log_happy(seeded_client):
     assert r.status_code == 200
     log = r.json()["log"]
     assert log["source"] == "staff"
-    assert log["mess_id"] == "Mess 1"
+    assert log["mess_id"] == "Jawahar Bhawan Mess"
     assert log["meal"] == "lunch"
     assert log["category"] == "plate"
     assert log["weight_kg"] == 12.5

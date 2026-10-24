@@ -1,10 +1,28 @@
-"""Synthetic scenario constants from SPEC Section 8."""
+"""Synthetic scenario constants from SPEC Section 8.
 
+Group names are real IIT Roorkee bhawans, messes and departments; centres are
+the building positions in OpenStreetMap (ODbL), checked 24 Oct 2026. Bin
+positions, fill levels and all history stay simulated.
+"""
+
+# (group_type, group_name, bin id prefix, bins, capacity_l, (lat, lon) centre)
 GROUPS = [
-    *(('hostel', f'Hostel {letter}', 5, 240) for letter in 'ABCDEF'),
-    *(('mess', f'Mess {number}', 2, 660) for number in range(1, 4)),
-    *(('mess_food', f'Mess {number}', 2, 120) for number in range(1, 4)),
-    *(('department', f'Dept {number}', 2, 120) for number in range(1, 5)),
+    ('hostel', 'Rajendra Bhawan', 'HA', 5, 240, (29.87101, 77.89408)),
+    ('hostel', 'Rajiv Bhawan', 'HB', 5, 240, (29.86978, 77.89498)),
+    ('hostel', 'Radhakrishnan Bhawan', 'HC', 5, 240, (29.87120, 77.89566)),
+    ('hostel', 'Govind Bhawan', 'HD', 5, 240, (29.86203, 77.89447)),
+    ('hostel', 'Kasturba Bhawan', 'HE', 5, 240, (29.86724, 77.90090)),
+    ('hostel', 'Sarojini Bhawan', 'HF', 5, 240, (29.86505, 77.90003)),
+    ('mess', 'Jawahar Bhawan Mess', 'M1', 2, 660, (29.86346, 77.90057)),
+    ('mess', 'Cautley & Ganga Bhawan Mess', 'M2', 2, 660, (29.87199, 77.89520)),
+    ('mess', 'Ravindra Bhawan Mess', 'M3', 2, 660, (29.86493, 77.89282)),
+    ('mess_food', 'Jawahar Bhawan Mess', 'M1', 2, 120, (29.86346, 77.90057)),
+    ('mess_food', 'Cautley & Ganga Bhawan Mess', 'M2', 2, 120, (29.87199, 77.89520)),
+    ('mess_food', 'Ravindra Bhawan Mess', 'M3', 2, 120, (29.86493, 77.89282)),
+    ('department', 'Civil Engineering Dept', 'D1', 2, 120, (29.86261, 77.89854)),
+    ('department', 'Electrical Engineering Dept', 'D2', 2, 120, (29.86367, 77.89732)),
+    ('department', 'Mechanical & Industrial Engg Dept', 'D3', 2, 120, (29.86221, 77.89782)),
+    ('department', 'Computer Science & Engg Dept', 'D4', 2, 120, (29.86351, 77.89591)),
 ]
 
 BASE_RATE_PCT = {'hostel': 22.0, 'mess': 30.0, 'department': 15.0}

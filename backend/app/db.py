@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS item_checks (
 
 CREATE TABLE IF NOT EXISTS mess_waste_logs (
   log_id INTEGER PRIMARY KEY AUTOINCREMENT,
-  mess_id TEXT NOT NULL,                  -- e.g. 'Mess 1' (= bins.group_name)
+  mess_id TEXT NOT NULL,                  -- e.g. 'Jawahar Bhawan Mess' (= bins.group_name)
   date TEXT NOT NULL,
   meal TEXT NOT NULL CHECK (meal IN ('breakfast','lunch','snacks','dinner')),
   category TEXT NOT NULL CHECK (category IN ('plate','kitchen_prep','unserved')),

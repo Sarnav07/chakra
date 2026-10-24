@@ -1,7 +1,8 @@
 CHAKRA - COST SLIDE (P3-8 part 1, prepared by P2 for P3)
 =====================================================================
 Cost figures: SPEC Appendix A only. Savings panel: backend/data/demo_cache/
-twin.json generated 2026-10-24 14:53 (30 simulated days, seeds 11/22/33).
+twin.json generated 2026-10-24 15:14 (30 simulated days, seeds 11/22/33,
+real IIT Roorkee group positions).
 Re-read twin.json if the twin is run again before the demo.
 
 
@@ -59,13 +60,13 @@ OPTIONAL SIDE PANEL: WHAT IT SAVES (SIMULATED)
 Panel title: In the 30-day digital twin (simulated)
 
 CHAKRA at tau 0.1 vs a fixed route that visits every bin daily:
-  - 28% fewer km            (205.7 vs 286.8 km)
-  - 62% less route time     (2,159 vs 5,647 minutes)
-  - 70% fewer pickups       (445 vs 1,500)
+  - 27% fewer km            (191.3 vs 263.0 km)
+  - 62% less route time     (2,096 vs 5,552 minutes)
+  - 70% fewer pickups       (444 vs 1,500)
 
 CHAKRA at tau 0.1 vs a simple "visit when > 70% full" rule:
-  - 47% fewer overflow events (18.7 vs 35.3) for slightly fewer km
-    (205.7 vs 208.6 km)
+  - 50% fewer overflow events (18.0 vs 36.3) for 4% more km
+    (191.3 vs 183.3 km)
 
 Panel footnote: Simulated campus, mean of 3 seeds; not field measurements.
 Trade-off: the fixed daily route has 0 overflows but drives the most.
@@ -76,8 +77,8 @@ DO NOT SAY (honesty rules)
 ---------------------------------------------------------------------
 - Do not claim rupee savings. In the twin, cost is mostly the assumed
   Rs 800 fixed cost per vehicle-day, so the fixed route is not more
-  expensive in rupees (fixed route Rs 52,509 vs CHAKRA at tau 0.1
-  Rs 55,535 over 30 days).
+  expensive in rupees (fixed route Rs 52,223 vs CHAKRA at tau 0.1
+  Rs 52,429 over 30 days).
 - Do not call the savings measured: every number in the panel is simulated.
 - Do not quote the classifier accuracy until the model file is loaded on
   the demo laptop.
@@ -88,7 +89,7 @@ SPOKEN LINE (4:35-5:00 segment, about 20 seconds)
 ---------------------------------------------------------------------
 "A four-week pilot costs between zero and about twenty-three thousand
 rupees, mostly phones and a scale that campuses often already have. In
-our simulated month, CHAKRA drives 28% fewer kilometres and makes 70%
+our simulated month, CHAKRA drives 27% fewer kilometres and makes 70%
 fewer pickups than a daily fixed route, and has half the overflows of a
-simple 70%-full rule. These are simulated numbers; the pilot is how we
+simple 70%-full rule for about 4% more driving. These are simulated numbers; the pilot is how we
 measure them for real."

@@ -21,11 +21,6 @@ export default function Home() {
       <p className="home-subtitle">CHAKRA forecasts which campus bins will overflow by the end of tomorrow, plans capacity-safe routes for only those bins, and proves the trade-off on a 30-day digital twin.</p>
       <div className="home-actions">
         <Link className="home-primary" to="/map">Open the risk map</Link>
-        <Link className="home-play" to="/twin" aria-label="See the 30-day twin">
-          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24">
-            <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" />
-          </svg>
-        </Link>
       </div>
       <figure className="home-preview" aria-label="Preview of the CHAKRA dispatcher screen with simulated data">
         <div className="home-preview-inner">

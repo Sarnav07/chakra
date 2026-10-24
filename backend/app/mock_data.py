@@ -37,12 +37,12 @@ def _bin(bin_id, name, group_type, group_name, stream, dlat, dlon, capacity_l):
 
 
 MOCK_BINS = [
-    _bin("HA-1", "Hostel A bin 1", "hostel", "Hostel A", "general", 0.0012, -0.0018, 240),
-    _bin("HB-1", "Hostel B bin 1", "hostel", "Hostel B", "general", 0.0024, 0.0008, 240),
-    _bin("M1-G1", "Mess 1 general bin 1", "mess", "Mess 1", "general", -0.0005, 0.0021, 660),
-    _bin("M1-F1", "Mess 1 food bin 1", "mess_food", "Mess 1", "food", -0.0003, 0.0024, 120),
-    _bin("D1-1", "Dept 1 bin 1", "department", "Dept 1", "general", -0.0017, -0.0005, 120),
-    _bin("D2-1", "Dept 2 bin 1", "department", "Dept 2", "general", 0.0040, -0.0035, 120),
+    _bin("HA-1", "Rajendra Bhawan bin 1", "hostel", "Rajendra Bhawan", "general", 0.0012, -0.0018, 240),
+    _bin("HB-1", "Rajiv Bhawan bin 1", "hostel", "Rajiv Bhawan", "general", 0.0024, 0.0008, 240),
+    _bin("M1-G1", "Jawahar Bhawan Mess general bin 1", "mess", "Jawahar Bhawan Mess", "general", -0.0005, 0.0021, 660),
+    _bin("M1-F1", "Jawahar Bhawan Mess food bin 1", "mess_food", "Jawahar Bhawan Mess", "food", -0.0003, 0.0024, 120),
+    _bin("D1-1", "Civil Engineering Dept bin 1", "department", "Civil Engineering Dept", "general", -0.0017, -0.0005, 120),
+    _bin("D2-1", "Electrical Engineering Dept bin 1", "department", "Electrical Engineering Dept", "general", 0.0040, -0.0035, 120),
 ]
 BINS_BY_ID = {b["bin_id"]: b for b in MOCK_BINS}
 
@@ -85,7 +85,7 @@ _BATCHES = [
 
 _MEAL_KG = {"breakfast": 6, "lunch": 14, "snacks": 3, "dinner": 16}
 _CATEGORY_SHARE = {"plate": 0.5, "kitchen_prep": 0.3, "unserved": 0.2}
-_MESSES = ("Mess 1", "Mess 2", "Mess 3")
+_MESSES = ("Jawahar Bhawan Mess", "Cautley & Ganga Bhawan Mess", "Ravindra Bhawan Mess")
 
 
 # ---------------------------------------------------------------- bins
@@ -421,7 +421,7 @@ def _mess_rows():
                                  "weight_kg": round(kg * share * (1 + 0.1 * m), 1),
                                  "weighed": 1, "logged_by": "simulated", "source": "simulated",
                                  "created_at": f"{day}T20:00:00+05:30"})
-    rows.append({"log_id": log_id + 1, "mess_id": "Mess 1",
+    rows.append({"log_id": log_id + 1, "mess_id": "Jawahar Bhawan Mess",
                  "date": MOCK_SCENARIO_DATE.isoformat(), "meal": "dinner", "category": "plate",
                  "weight_kg": 8.5, "weighed": 1, "logged_by": "mess staff", "source": "staff",
                  "created_at": _ts(0, 21, 10)})

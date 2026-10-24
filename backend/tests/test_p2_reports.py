@@ -12,9 +12,9 @@ from app.routers import reports as reports_router
 
 PLAN_ID = "P-2026-10-25-abc123"
 NOW = "2026-10-24T20:30:00+05:30"
-BINS = [("HA-1", "Hostel A bin 1", "hostel", "Hostel A", "general", 29.8661, 77.8942, 240),
-        ("M1-G1", "Mess 1 general bin 1", "mess", "Mess 1", "general", 29.8645, 77.8981, 660),
-        ("M1-F1", "Mess 1 food bin 1", "mess_food", "Mess 1", "food", 29.8647, 77.8984, 120)]
+BINS = [("HA-1", "Rajendra Bhawan bin 1", "hostel", "Rajendra Bhawan", "general", 29.8661, 77.8942, 240),
+        ("M1-G1", "Jawahar Bhawan Mess general bin 1", "mess", "Jawahar Bhawan Mess", "general", 29.8645, 77.8981, 660),
+        ("M1-F1", "Jawahar Bhawan Mess food bin 1", "mess_food", "Jawahar Bhawan Mess", "food", 29.8647, 77.8984, 120)]
 # bin_id -> (selected, reason_code)
 DECISIONS = {"HA-1": (0, "below_tau"), "M1-G1": (1, "p_over_tau"), "M1-F1": (0, "below_tau")}
 
@@ -136,7 +136,7 @@ def test_list_reports_with_bin_name(client, data):
 
     every = client.get("/api/reports?status=all").json()["reports"]
     assert {r["bin_id"] for r in every} == {"HA-1", "M1-F1"}
-    assert {r["bin_name"] for r in every} == {"Hostel A bin 1", "Mess 1 food bin 1"}
+    assert {r["bin_name"] for r in every} == {"Rajendra Bhawan bin 1", "Jawahar Bhawan Mess food bin 1"}
     assert [r["bin_id"] for r in client.get("/api/reports").json()["reports"]] == ["HA-1"]
     assert [r["status"] for r in client.get("/api/reports?status=rejected").json()["reports"]] \
         == ["rejected"]
