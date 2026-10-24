@@ -6,6 +6,7 @@ import Backdrop from "./Backdrop";
 import LeafLogo from "./LeafLogo";
 
 const NAV_LINKS = [
+  { to: "/", label: "Home" },
   { to: "/map", label: "Risk map" },
   { to: "/plan", label: "Plan tomorrow" },
   { to: "/worker", label: "Worker" },
@@ -41,7 +42,8 @@ export default function Layout({ children }) {
               className={({ isActive }) =>
                 `ck-topbar__link${isActive ? " ck-topbar__link--active" : ""}`
               }
->
+              end={link.to === "/"}
+            >
               {link.label}
             </NavLink>
           ))}
