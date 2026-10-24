@@ -1,0 +1,53 @@
+CHAKRA - DEMO-DAY RUN SHEET
+All scenario data is SYNTHETIC. Savings are "simulated savings".
+
+1. START (two PowerShell windows, from the repository root)
+   Backend:
+     cd backend; .venv\Scripts\python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
+   Frontend:
+     cd frontend; npm run dev -- --host
+   If Windows Firewall asks, allow Python and Node on PRIVATE networks.
+
+2. URLS
+   Laptop:  http://localhost:5173
+   Phones (same Wi-Fi as the laptop):  http://<laptop-ip>:5173
+     Find <laptop-ip>: run ipconfig, take "IPv4 Address" under
+     "Wireless LAN adapter Wi-Fi". At prep time it was 192.168.1.13
+     (http://192.168.1.13:5173) - check again at the venue, it changes
+     with the network.
+   The frontend proxies /api to the backend, so phones only need port 5173.
+
+   Pages (add to the base URL above):
+     /                 Home
+     /map              Risk map
+     /plan             Plan tomorrow
+     /worker           Worker
+     /reports          Reports
+     /check            Check an item
+     /mess             Mess log
+     /twin             Twin lab
+     /dashboard        Dashboard
+     /scale            Scale lab
+     /qr               QR sheet (not in nav; open it via the Wi-Fi URL so
+                       the QR codes point to the laptop IP, not localhost)
+     /bin/HA-1/report  Phone report page for bin HA-1 (not in nav)
+
+3. BEFORE PRESENTING
+   Press "Reset demo" in the top bar (= POST /api/demo/reset).
+   This rebuilds the demo database; the twin and scale lab caches stay.
+
+4. DEMO PATH
+   1. Home
+   2. Risk map
+   3. Plan tomorrow: slide tau to 0.1 -> "Plan routes" -> "Choose this plan"
+      on the recommended alternative
+   4. Worker: "Done" on the first stop, then "Report overflow" on another stop
+   5. Reports: the new report is in the queue
+   6. Twin lab: show the trade-off chart (simulated, 30 days, 3 seeds)
+   7. Dashboard
+
+5. IF THE CLASSIFIER SAYS "NOT LOADED" (Check an item page)
+   - Copy item_classifier.pt and classifier_report.json into
+     backend\data\model\
+   - cd backend; .venv\Scripts\python -m pip install -r requirements-ml.txt --index-url https://download.pytorch.org/whl/cpu
+   - Restart the backend (Ctrl+C in the backend window, then start it again)

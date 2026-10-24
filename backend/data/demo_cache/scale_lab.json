@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T14:42:34+05:30",
+  "generated_at": "2026-10-24T15:04:22+05:30",
   "synthetic": true,
   "instances": [
     {
@@ -9,7 +9,7 @@
       "source": "seeded_db_selection",
       "three_stage": {
         "km": 7.724,
-        "runtime_s": 0.007,
+        "runtime_s": 0.006,
         "feasible": true
       },
       "nearest_neighbor": {
@@ -25,12 +25,12 @@
       "source": "synthetic",
       "three_stage": {
         "km": 689.312,
-        "runtime_s": 10.455,
+        "runtime_s": 9.495,
         "feasible": true
       },
       "nearest_neighbor": {
         "km": 704.611,
-        "runtime_s": 4.683,
+        "runtime_s": 4.31,
         "feasible": true
       }
     }
