@@ -1,0 +1,56 @@
+CHAKRA P1 classifier: Kaggle training
+====================================
+
+Import CHAKRA_P1_Kaggle.ipynb into a Kaggle notebook. Attach both inputs:
+
+  https://www.kaggle.com/datasets/huberthamelin/garbage-classification-labels-corrections
+  https://www.kaggle.com/datasets/asdasdasasdas/garbage-classification
+
+The notebook uses only garbage_classification_enhanced from the first input.
+That source supplies biological and battery images. The second input adds
+six-class clean-background images. Battery is a separate hazardous output,
+never part of other.
+
+1. Set Accelerator to GPU and Internet to On in notebook settings. Check that
+   the first code cell prints CUDA: True. The cell lists /kaggle/input and
+   finds each dataset's actual class-folder root; do not guess mount paths.
+   The six-class input can expose two copies of the same folder tree; the
+   notebook selects one and prints the chosen path.
+2. The next cell downloads the official RealWaste archive from UCI and checks
+   its nine class counts. RealWaste is held out of training for shift_test.
+   If Kaggle Internet is unavailable, attach a private RealWaste dataset and
+   adjust that cell to its printed mount path before running it. Check the
+   source's current license terms before use.
+3. Run all notebook cells in order. They write the checked-in preparation,
+   training and evaluation scripts to /kaggle/working. The manifest keeps
+   RealWaste out of the train/validation/random-test split and removes
+   byte-identical image copies. Unknown image-folder labels stop the run.
+4. Inspect the manifest class counts, per-epoch output, random_test and
+   shift_test image counts, accuracy, per-class support and confusion
+   matrices. Do not report accuracy before the evaluation finishes.
+5. Download item_classifier.pt and classifier_report.json from
+   /kaggle/working and place them in backend/data/model/ on the demo laptop.
+   Do not commit datasets, images, or model weights. Restart the backend and
+   confirm GET /api/classify/status shows available=true and the report.
+
+The equivalent three commands in the notebook's last training cell are:
+
+  python /kaggle/working/prepare_dataset.py \
+    --source kaggle12=<printed-enhanced-path> \
+    --source trashnet=<printed-six-class-path> \
+    --source realwaste=<downloaded-or-attached-realwaste-path> \
+    --out /kaggle/working/manifest.csv
+
+  python /kaggle/working/train_classifier.py \
+    --manifest /kaggle/working/manifest.csv --holdout-source realwaste \
+    --epochs 8 --batch-size 64 --lr 0.0003 --seed 0 \
+    --out-dir /kaggle/working
+
+  python /kaggle/working/eval_classifier.py \
+    --model /kaggle/working/item_classifier.pt \
+    --manifest /kaggle/working/manifest.csv --holdout-source realwaste \
+    --out /kaggle/working/classifier_report.json
+
+For an optional campus test, arrange separately labeled photos under the six
+checkpoint class names and pass --campus-dir to eval_classifier.py. Keep that
+result separate from the random and RealWaste tests.
