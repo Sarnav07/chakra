@@ -1,0 +1,94 @@
+CHAKRA - COST SLIDE (P3-8 part 1, prepared by P2 for P3)
+=====================================================================
+Cost figures: SPEC Appendix A only. Savings panel: backend/data/demo_cache/
+twin.json generated 2026-10-24 14:53 (30 simulated days, seeds 11/22/33).
+Re-read twin.json if the twin is run again before the demo.
+
+
+---------------------------------------------------------------------
+SLIDE TITLE
+---------------------------------------------------------------------
+What a 4-week pilot costs: Rs 0 to about Rs 23,500
+
+
+---------------------------------------------------------------------
+SUBTITLE (one line under the title)
+---------------------------------------------------------------------
+Pilot: one hostel cluster + one mess, 4 weeks, 2 staff phones,
+1 dispatcher laptop, 1 vehicle.
+
+
+---------------------------------------------------------------------
+TABLE
+---------------------------------------------------------------------
+Item              | One-time                        | Recurring
+------------------+---------------------------------+---------------------------
+Software          | Rs 0 (open-source tools)        | Rs 0
+Server            | Rs 0 (existing campus machine)  | Rs 0, or US$4-6 / month
+                  |                                 | (basic cloud VM)
+Staff phones (2)  | Rs 0 (own phones, with consent) | -
+                  | or Rs 10,000-14,000             |
+Mobile data (2)   | -                               | Rs 0 on campus Wi-Fi, or
+                  |                                 | up to Rs 378 / 28 days
+Mess scale        | Rs 0 if the mess has one,       | -
+                  | or Rs 5,900-9,500 (100 kg)      |
+Classifier        | Rs 0 (free Colab/Kaggle GPU)    | Rs 0 (CPU inference)
+------------------+---------------------------------+---------------------------
+PILOT TOTAL       | Rs 0 to about Rs 23,500         | US$4-6 + Rs 0-378 / month
+
+
+---------------------------------------------------------------------
+SMALL LINE UNDER THE TABLE
+---------------------------------------------------------------------
+Staff time: about 1 hour training per person; seconds per tap; about
+2 minutes per meal log (assumption, to be measured in the pilot).
+Cameras: not costed (proposed only).
+
+
+---------------------------------------------------------------------
+FOOTNOTES (two lines, small text, bottom of the slide)
+---------------------------------------------------------------------
+Indicative online prices checked 24 Oct 2026, not quotations.
+Scaling: each extra hostel adds at most 2 phones + data; each extra mess at
+most 1 scale; software and one small server stay the same up to campus size.
+
+
+---------------------------------------------------------------------
+OPTIONAL SIDE PANEL: WHAT IT SAVES (SIMULATED)
+---------------------------------------------------------------------
+Panel title: In the 30-day digital twin (simulated)
+
+CHAKRA at tau 0.1 vs a fixed route that visits every bin daily:
+  - 28% fewer km            (205.7 vs 286.8 km)
+  - 62% less route time     (2,159 vs 5,647 minutes)
+  - 70% fewer pickups       (445 vs 1,500)
+
+CHAKRA at tau 0.1 vs a simple "visit when > 70% full" rule:
+  - 47% fewer overflow events (18.7 vs 35.3) for slightly fewer km
+    (205.7 vs 208.6 km)
+
+Panel footnote: Simulated campus, mean of 3 seeds; not field measurements.
+Trade-off: the fixed daily route has 0 overflows but drives the most.
+
+
+---------------------------------------------------------------------
+DO NOT SAY (honesty rules)
+---------------------------------------------------------------------
+- Do not claim rupee savings. In the twin, cost is mostly the assumed
+  Rs 800 fixed cost per vehicle-day, so the fixed route is not more
+  expensive in rupees (fixed route Rs 52,509 vs CHAKRA at tau 0.1
+  Rs 55,535 over 30 days).
+- Do not call the savings measured: every number in the panel is simulated.
+- Do not quote the classifier accuracy until the model file is loaded on
+  the demo laptop.
+
+
+---------------------------------------------------------------------
+SPOKEN LINE (4:35-5:00 segment, about 20 seconds)
+---------------------------------------------------------------------
+"A four-week pilot costs between zero and about twenty-three thousand
+rupees, mostly phones and a scale that campuses often already have. In
+our simulated month, CHAKRA drives 28% fewer kilometres and makes 70%
+fewer pickups than a daily fixed route, and has half the overflows of a
+simple 70%-full rule. These are simulated numbers; the pilot is how we
+measure them for real."
