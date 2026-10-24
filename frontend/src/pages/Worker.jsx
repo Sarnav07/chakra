@@ -113,7 +113,7 @@ export default function Worker() {
       </div>
 
       {current && (
-        <Card title={`${current.vehicle_id} — ${current.stream}`}>
+        <Card title={`${current.vehicle_id} — ${current.stream} · ${(current.stops || []).filter((s) => s.done).length} of ${(current.stops || []).length} done`}>
           {(current.stops || [])
             .slice()
             .sort((a, b) => a.seq - b.seq)
@@ -175,9 +175,11 @@ export default function Worker() {
                     </div>
                   )}
 
-                  <div style={{ marginTop: "var(--space-1)" }}>
-                    <ReportOverflowButton binId={stop.bin_id} binName={stop.name} onReported={load} />
-                  </div>
+                  {!stop.done && (
+                    <div style={{ marginTop: "var(--space-1)" }}>
+                      <ReportOverflowButton binId={stop.bin_id} binName={stop.name} onReported={load} />
+                    </div>
+                  )}
                 </div>
               );
             })}

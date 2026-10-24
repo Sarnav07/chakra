@@ -10,6 +10,8 @@ from app.routing.distance import road_km
 from app.routing.types import RoutingSettings, Stop
 
 TOLERANCE = 1e-6   # float slack when re-checking sums
+RELOCATE_MAX_STOPS = 300   # stage 3b runs on streams up to this size
+RELOCATE_MAX_PASSES = 20
 
 
 def _path_km(start, stops, end, detour_factor) -> float:
@@ -71,6 +73,46 @@ def _best_insertion(routes, source, stop, settings):
             if best is None or (added, index, pos) < best[0]:
                 best = ((added, index, pos), target, pos)
     return None if best is None else (best[1], best[2])
+
+
+def improve_relocate(routes: list[dict], settings: RoutingSettings,
+                     max_passes: int = RELOCATE_MAX_PASSES) -> list[dict]:
+    """Inter-route relocate (SPEC 10 stage 3b): move a stop to its cheapest
+    insertion in another non-empty same-stream route when that lowers total km
+    and the receiver keeps capacity and shift. Removing a stop never lengthens
+    its own route. Stops are tried in bin_id order, so the result is
+    deterministic. Streams with more than RELOCATE_MAX_STOPS stops are skipped
+    (runtime). Input routes are not modified."""
+    routes = [{**r, "stops": list(r["stops"])} for r in routes]
+    for stream in {r["stream"] for r in routes}:
+        same = [r for r in routes if r["stream"] == stream]
+        if sum(len(r["stops"]) for r in same) > RELOCATE_MAX_STOPS:
+            continue
+        start, end = _ends(stream, settings)
+        for _ in range(max_passes):
+            moved = False
+            for source in same:
+                for stop in sorted(source["stops"], key=lambda s: s.bin_id):
+                    rest = [s for s in source["stops"] if s is not stop]
+                    if not rest:
+                        continue   # emptying a route is left to the fleet-size choice
+                    saving = (_path_km(start, source["stops"], end, settings.detour_factor)
+                              - _path_km(start, rest, end, settings.detour_factor))
+                    targets = [r for r in same if r["stops"]]
+                    found = _best_insertion(targets, source, stop, settings)
+                    if found is None:
+                        continue
+                    target, pos = found
+                    before = _path_km(start, target["stops"], end, settings.detour_factor)
+                    trial = target["stops"][:pos] + [stop] + target["stops"][pos:]
+                    added = _path_km(start, trial, end, settings.detour_factor) - before
+                    if added < saving - TOLERANCE:
+                        source["stops"] = rest
+                        target["stops"] = trial
+                        moved = True
+            if not moved:
+                break
+    return routes
 
 
 def enforce_shift(routes: list[dict], settings: RoutingSettings) -> tuple[list[dict], list[str]]:

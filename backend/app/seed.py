@@ -110,6 +110,20 @@ def run_seed(
         conn.close()
 
 
+def save_initial_forecasts(db_path=None) -> int:
+    """Store one forecast run for plan_date so the dashboard has a forecast
+    straight after a seed or demo reset. Returns the number of rows saved."""
+    from app.db import get_meta
+    from app.forecast.model import forecast_bins, persist_forecasts
+
+    conn = get_conn(db_path)
+    try:
+        plan_date = date.fromisoformat(get_meta(conn, 'plan_date'))
+        return len(persist_forecasts(conn, forecast_bins(conn, plan_date)))
+    finally:
+        conn.close()
+
+
 def layout_by_id(layout: list[dict]) -> list[str]:
     return [row['bin_id'] for row in layout]
 
@@ -122,6 +136,7 @@ def main() -> int:
     parser.add_argument('--with-scale', action='store_true')
     args = parser.parse_args()
     print('Seed summary:', run_seed(args.seed, args.date))
+    print('Forecasts saved:', save_initial_forecasts())
     if args.with_twin:
         try:
             from app.twin.policies import run_twin

@@ -15,7 +15,16 @@ function FitBounds({ alternative, nodes }) {
       for (const s of r.stops || []) pts.push([s.lat, s.lon]);
     }
     for (const n of nodes || []) pts.push([n.lat, n.lon]);
-    if (pts.length > 0) map.fitBounds(pts, { padding: [24, 24] });
+    if (pts.length === 0) return;
+    // fit after layout: during the page fade-in the container can still have
+    // its initial size, and Leaflet then zooms out to the whole city
+    const fit = () => {
+      map.invalidateSize();
+      map.fitBounds(pts, { padding: [24, 24], maxZoom: 17 });
+    };
+    fit();
+    const timer = setTimeout(fit, 350);
+    return () => clearTimeout(timer);
   }, [alternative, nodes, map]);
   return null;
 }

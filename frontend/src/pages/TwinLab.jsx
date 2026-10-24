@@ -14,6 +14,8 @@ const POLICY_LABELS = {
   C_chakra: "C CHAKRA",
 };
 
+const SHORT_LABELS = { A_fixed: "A Fixed", B_rule70: "B 70% rule", C_chakra: "C CHAKRA" };
+
 function policyLabel(p) {
   if (p.policy === "C_chakra") return `C CHAKRA (tau ${p.tau})`;
   return POLICY_LABELS[p.policy] || p.policy;
@@ -114,8 +116,8 @@ export default function TwinLab() {
   const policyRows = (policies || []).map((p) => ({ ...p, id: p.policy, label: policyLabel(p) }));
 
   // --- Bar chart data ---
-  const barKm = policyRows.map((p) => ({ name: p.policy, km: p.mean?.km ?? 0 }));
-  const barOverflow = policyRows.map((p) => ({ name: p.policy, overflow: p.mean?.overflow_events ?? 0 }));
+  const barKm = policyRows.map((p) => ({ name: SHORT_LABELS[p.policy] || p.policy, km: p.mean?.km ?? 0 }));
+  const barOverflow = policyRows.map((p) => ({ name: SHORT_LABELS[p.policy] || p.policy, overflow: p.mean?.overflow_events ?? 0 }));
 
   // --- Scatter chart ---
   const scatterData = (sweep || []).map((s) => ({
@@ -138,9 +140,9 @@ export default function TwinLab() {
   // --- Sensitivity table ---
   const sensCols = [
     { key: "detour_factor", label: "Detour factor" },
-    { key: "policy", label: "Policy" },
-    { key: "km", label: "km" },
-    { key: "overflow_events", label: "Overflow events" },
+    { key: "policy", label: "Policy", render: (v) => SHORT_LABELS[v] || v },
+    { key: "km", label: "km", render: (v) => (typeof v === "number" ? v.toFixed(1) : v) },
+    { key: "overflow_events", label: "Overflow events", render: (v) => (typeof v === "number" ? v.toFixed(1) : v) },
   ];
   const sensRows = (sensitivity || []).map((s, i) => ({ ...s, id: i }));
 
