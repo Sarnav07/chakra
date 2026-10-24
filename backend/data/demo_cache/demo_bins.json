@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-10-24T13:02:35+05:30",
+  "synthetic": true,
+  "scenario_date": "2026-10-24",
+  "plan_date": "2026-10-25",
+  "tau": 0.5,
+  "skip_example": {
+    "bin_id": "M3-G1",
+    "current_fill_pct": 20.0,
+    "predicted_fill_pct": 45.598914715283485,
+    "p_overflow": 1.0808387483269567e-10,
+    "reason_code": "below_tau",
+    "reason": "0% chance of overflow tomorrow, below tau = 0.50"
+  },
+  "visit_example": {
+    "bin_id": "HD-5",
+    "current_fill_pct": 80.0,
+    "predicted_fill_pct": 106.07361682460045,
+    "p_overflow": 0.7380370222160061,
+    "reason_code": "p_over_tau",
+    "reason": "74% chance of overflow tomorrow, above tau = 0.50"
+  },
+  "stale_examples": [
+    {
+      "bin_id": "HA-5",
+      "current_fill_pct": 55.0,
+      "predicted_fill_pct": 72.48362689590337,
+      "p_overflow": 0.0003391684448582595,
+      "reason_code": "needs_review",
+      "reason": "No fresh reading in 36 h - visit and tap a level"
+    },
+    {
+      "bin_id": "M2-F1",
+      "current_fill_pct": 27.0,
+      "predicted_fill_pct": 53.90089078855493,
+      "p_overflow": 3.238722144425623e-10,
+      "reason_code": "needs_review",
+      "reason": "No fresh reading in 36 h - visit and tap a level"
+    }
+  ]
+}

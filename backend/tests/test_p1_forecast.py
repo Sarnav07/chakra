@@ -51,3 +51,9 @@ def test_observation_updates_latest_fill(seeded_client):
     assert seeded_client.post("/api/observations", json={
         "bin_id": "HA-1", "level": "low", "fill_pct": 20,
     }).status_code == 422
+
+
+def test_forecast_eval_requires_seeded_database(client):
+    response = client.get("/api/forecasts/eval")
+    assert response.status_code == 422
+    assert response.json()["detail"] == "Database not seeded - run python -m app.seed"
