@@ -1,7 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap');
+
 :root {
   --color-bg: #F3F6F4;
   --color-surface: #FFFFFF;
   --color-text: #252B31;
+  --color-text-body: #3F4A4B;
   --color-muted: #5E6A6B;
   --color-border: rgba(37, 43, 49, 0.12);
   --color-primary: #252B31;
@@ -9,20 +12,19 @@
   --color-danger: #8C1D1D;
   --color-success: #1E6B47;
   --color-risk-low: #2E9D5B;
-  --color-risk-mid: #E0A21B;
-  --color-risk-high: #D2452F;
+  --color-risk-mid: #A86900;
+  --color-risk-high: #C04528;
   --color-overflow: #7A1010;
-  --color-review: #8A8F98;
+  --color-review: #6B7079;
   --color-reported: #7B3FC2;
   --color-badge-implemented: #1E6B47;
-  --color-badge-simulated: #B04A14;
+  --color-badge-simulated: #9A3F10;
   --color-badge-proposed: #3D4A5C;
   --color-badge-new: #0B7373;
   --color-p1: #2F6DB5;
   --color-p2: #B8791F;
   --color-p3: #9C2A6B;
   --color-accent: #1E6B47;
-  --color-text-body: #3F4A4B;
   --color-surface-glass: rgba(255, 255, 255, 0.82);
   --color-border-glass: rgba(255, 255, 255, 0.7);
   --glass-blur: 16px;
@@ -35,10 +37,10 @@
   --space-4: 16px;
   --space-5: 24px;
   --space-6: 32px;
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: "Fira Code", ui-monospace, "Cascadia Code", "Source Code Pro", monospace;
-  --font-display: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  --font-display: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   --shadow-card: 0 25px 80px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  --veil: rgba(255, 255, 255, 0.30);
+  --veil: rgba(255, 255, 255, 0.45);
 }

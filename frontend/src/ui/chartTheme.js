@@ -1,5 +1,5 @@
 export const CHART = {
-  series: ["#1E6B47", "#2F6DB5", "#B8791F", "#9C2A6B", "#0E8C8C", "#D2452F"],
-  grid: "#e5e7eb",
+  series: ["#1E6B47", "#1F5F8B", "#C25E00", "#697672", "#7B3FC2", "#0B7373"],
+  grid: "#EEF1EF",
   fontSize: 12,
 };

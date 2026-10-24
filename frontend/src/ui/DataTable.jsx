@@ -8,7 +8,7 @@ export default function DataTable({ columns, rows, emptyText }) {
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.key}>{col.label}</th>
+              <th key={col.key} scope="col">{col.label}</th>
             ))}
           </tr>
         </thead>
