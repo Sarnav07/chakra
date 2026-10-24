@@ -1,5 +1,7 @@
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
+
 async function request(path, options = {}) {
-  const res = await fetch("/api" + path, options);
+  const res = await fetch(`${apiBaseUrl}/api${path}`, options);
   const contentType = res.headers.get("content-type") || "";
   let data;
   if (contentType.includes("application/json")) {
