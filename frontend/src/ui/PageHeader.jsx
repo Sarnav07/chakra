@@ -16,11 +16,7 @@ export default function PageHeader({ title, subtitle, badges, accentLastWord = t
   }
 
   return (
-    <div className="ck-page-header">
-      <h1 className="ck-page-header__title" style={{ fontFamily: "var(--font-display)" }}>
-        {titleContent}
-      </h1>
-      {subtitle && <p className="ck-page-header__subtitle">{subtitle}</p>}
+    <div className="ck-page-header fade-up">
       {badges && badges.length > 0 && (
         <div className="ck-page-header__badges">
           {badges.map((kind) => (
@@ -28,6 +24,10 @@ export default function PageHeader({ title, subtitle, badges, accentLastWord = t
           ))}
         </div>
       )}
+      <h1 className="ck-page-header__title" style={{ fontFamily: "var(--font-display)" }}>
+        {titleContent}
+      </h1>
+      {subtitle && <p className="ck-page-header__subtitle">{subtitle}</p>}
     </div>
   );
 }

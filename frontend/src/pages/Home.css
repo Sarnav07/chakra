@@ -1,0 +1,29 @@
+.home-root{min-height:calc(100vh - 120px);overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:28px 12px 0}
+.home-badge,.home-title,.home-subtitle,.home-actions,.home-preview{animation:home-fade .6s ease both}
+.home-badge{display:inline-flex;align-items:center;gap:7px;padding:6px 16px;border:1px solid var(--color-border);border-radius:999px;background:var(--color-surface);font-size:14px;color:var(--color-muted)}
+.home-dot{width:7px;height:7px;border-radius:50%;background:var(--color-accent)}
+.home-title{font-family:var(--font-display);font-size:clamp(48px,7vw,80px);font-weight:400;line-height:.95;letter-spacing:-.02em;text-align:center;max-width:640px;margin:24px 0 0;animation-delay:.1s}
+.home-title em{color:var(--color-accent);font-weight:400}
+.home-subtitle{font-size:18px;line-height:1.65;color:var(--color-muted);text-align:center;max-width:650px;margin:16px 0 0;animation-delay:.2s}
+.home-actions{display:flex;align-items:center;gap:12px;margin-top:20px;animation-delay:.3s}
+.home-primary{display:inline-flex;align-items:center;min-height:44px;padding:0 24px;border-radius:999px;background:var(--color-primary);color:white;text-decoration:none;font-size:14px}
+.home-play{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:white;box-shadow:0 2px 12px #0002;color:var(--color-text)}
+.home-preview{width:100%;max-width:1024px;margin:32px 0 0;padding:14px;border-radius:16px;background:#ffffff66;border:1px solid #ffffff80;box-shadow:var(--shadow-card);animation-delay:.5s}
+.home-preview-inner{background:white;border:1px solid var(--color-border);border-radius:10px;overflow:hidden;font-size:11px}
+.home-preview-top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:1px solid var(--color-border)}
+.home-preview-top strong{display:flex;align-items:center;gap:8px;font-size:12px}
+.home-preview-top>span{color:var(--color-muted)}
+.home-mark{display:grid;place-items:center;width:22px;height:22px;border-radius:6px;background:var(--color-primary);color:white}
+.home-preview-body{display:flex}
+.home-preview-nav{width:160px;flex:none;display:flex;flex-direction:column;gap:3px;padding:12px 8px;border-right:1px solid var(--color-border)}
+.home-preview-nav>*{padding:6px 8px;border-radius:6px}
+.home-preview-nav strong{background:#f3f6f4}
+.home-preview-main{flex:1;min-width:0;padding:16px;background:#fafafa}
+.home-preview-greeting{display:flex;justify-content:space-between;gap:12px}.home-preview-greeting strong{font-size:14px}.home-preview-greeting span{color:var(--color-muted)}
+.home-preview-pills{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.home-preview-pills span{padding:4px 10px;border-radius:999px;border:1px solid var(--color-border);background:white}.home-preview-pills span:first-child{background:var(--color-accent);color:white}
+.home-preview-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}.home-preview-cards section{background:white;border:1px solid var(--color-border);border-radius:10px;padding:12px;min-height:180px}.home-preview-cards section>small{display:block;font-size:11px}.home-preview-cards section>strong{display:block;font-size:26px;margin-top:8px}.home-preview-cards strong small{font-size:12px;font-weight:400;color:var(--color-muted)}.home-preview-cards p{color:var(--color-muted);margin:5px 0 8px}
+.home-spark{width:100%;height:70px}.home-fleet{display:flex;justify-content:space-between;padding:7px 0;border-top:1px solid var(--color-border)}
+.home-preview-footer{display:flex;justify-content:space-between;margin-top:12px;padding:12px;border-radius:10px;background:white;border:1px solid var(--color-border)}
+@keyframes home-fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:640px){.home-title{font-size:48px}.home-subtitle{font-size:16px}.home-preview-nav{display:none}.home-preview-cards{grid-template-columns:1fr}.home-preview-top>span:nth-child(2){display:none}.home-preview-footer{display:none}}
+@media(prefers-reduced-motion:reduce){.home-badge,.home-title,.home-subtitle,.home-actions,.home-preview{animation:none}}

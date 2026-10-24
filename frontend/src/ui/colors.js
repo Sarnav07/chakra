@@ -1,5 +1,5 @@
 export function cssVar(name) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#5E6A6B";
 }
 
 export function riskColor(item) {
