@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-10-24T13:59:06+05:30",
+  "generated_at": "2026-10-24T14:42:34+05:30",
   "synthetic": true,
   "instances": [
     {
       "name": "campus",
-      "bins": 50,
-      "vehicles": 3,
-      "source": "seeded_db",
+      "bins": 17,
+      "vehicles": 2,
+      "source": "seeded_db_selection",
       "three_stage": {
-        "km": 12.962,
-        "runtime_s": 0.01,
-        "feasible": false
+        "km": 7.724,
+        "runtime_s": 0.007,
+        "feasible": true
       },
       "nearest_neighbor": {
-        "km": 11.12,
-        "runtime_s": 0.002,
-        "feasible": false
+        "km": 7.753,
+        "runtime_s": 0.0,
+        "feasible": true
       }
     },
     {
@@ -25,12 +25,12 @@
       "source": "synthetic",
       "three_stage": {
         "km": 689.312,
-        "runtime_s": 2.637,
+        "runtime_s": 10.455,
         "feasible": true
       },
       "nearest_neighbor": {
         "km": 704.611,
-        "runtime_s": 3.655,
+        "runtime_s": 4.683,
         "feasible": true
       }
     }

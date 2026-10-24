@@ -568,7 +568,11 @@ Vehicles for fleet size k = the first k of VEHICLES (one route per vehicle).
   k-1 serve general. If only one stream has stops: all k serve it.
   If k == 1 and both streams have stops: the vehicle serves general and
   every food stop is unassigned (alternative infeasible).
-Stage 1 - cluster (per stream, n clusters = vehicles for that stream):
+Stage 1 - cluster (per stream). n clusters: run stages 1-3 + gate + 3b
+  for every n from ceil(stream demand / effective capacity) to the
+  stream's vehicle count; keep the run with the fewest unassigned stops,
+  then lowest cost, then lowest km (a stream may leave vehicles idle).
+  Once every stop is served, stop at the first n that is not better.
   seeds: first seed = highest-demand stop; next seed = stop maximising
   (distance to nearest existing seed) x demand. Then up to 10 iterations:
   order stops by (distance to nearest centroid / demand) ascending; assign
@@ -591,6 +595,10 @@ Stage 3 - order stops: OR-Tools single-vehicle routing per cluster with
 Feasibility gate (after stage 3): if a route exceeds SHIFT_MIN, move its
   stop with the largest removal saving to another same-stream route that
   has capacity and time; if none can take it, mark it unassigned.
+Stage 3b - relocate (streams with <= 300 stops, up to 20 passes): move a
+  stop to its cheapest insertion in another non-empty same-stream route
+  when that lowers total km and keeps capacity and shift; then re-order
+  each route with OR-Tools (first solution) and keep the shorter order.
   An alternative is feasible only if: every selected stop appears exactly
   once across routes or in unassigned_bin_ids, unassigned is empty, every
   load <= effective capacity, every route minutes <= SHIFT_MIN.
